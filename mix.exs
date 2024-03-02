@@ -32,7 +32,9 @@ defmodule DevopsInsights.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:ex_check, "~> 0.14.0", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:phoenix, "~> 1.7.11"},
       {:phoenix_ecto, "~> 4.4"},
       {:ecto_sql, "~> 3.10"},
