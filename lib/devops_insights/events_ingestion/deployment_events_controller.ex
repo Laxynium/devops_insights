@@ -28,7 +28,7 @@ defmodule DevopsInsights.EventsIngestion.DeploymentEventsController do
 
       {:error, %{reason: reason}} ->
         conn
-        |> put_status(422)
+        |> put_status(400)
         |> json(%{reason: reason})
     end
   end

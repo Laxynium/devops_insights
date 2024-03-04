@@ -33,21 +33,16 @@ defmodule DevopsInsights.EventsIngestion.Event do
     end
   end
 
-  def parseTimestamp(timestamp) when is_number(timestamp) do
-    with {:ok, timestamp} <- DateTime.from_unix(timestamp) do
+  def parseTimestamp(timestamp) when is_binary(timestamp) do
+    with {:ok, timestamp, _} <- DateTime.from_iso8601(timestamp, Calendar.ISO) do
       {:ok, timestamp}
     else
       _err -> {:error, %{reason: "Invalid timestamp"}}
     end
   end
 
-  def parseTimestamp(timestamp) do
-    with {int_val, ""} <- Integer.parse(timestamp),
-         {:ok, timestamp} <- DateTime.from_unix(int_val) do
-      {:ok, timestamp}
-    else
-      _err -> {:error, %{reason: "Invalid timestamp"}}
-    end
+  def parseTimestamp(_timestamp) do
+    {:error, %{reason: "Invalid timestamp"}}
   end
 
   def parseServiceName(serviceName) do
