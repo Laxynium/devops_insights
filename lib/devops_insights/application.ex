@@ -11,7 +11,7 @@ defmodule DevopsInsights.Application do
       DevopsInsightsWeb.Telemetry,
       DevopsInsights.Repo,
       {DNSCluster, query: Application.get_env(:devops_insights, :dns_cluster_query) || :ignore},
-      {Phoenix.PubSub, name: DevopsInsights.PubSub},
+      # {Phoenix.PubSub, name: DevopsInsights.PubSub},
       # Start the Finch HTTP client for sending emails
       {Finch, name: DevopsInsights.Finch},
       # Start a worker by calling: DevopsInsights.Worker.start_link(arg)
