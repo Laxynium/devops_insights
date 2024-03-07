@@ -17,8 +17,7 @@ defmodule DevopsInsights.Application do
       # Start a worker by calling: DevopsInsights.Worker.start_link(arg)
       # {DevopsInsights.Worker, arg},
       # Start to serve requests, typically the last entry
-      DevopsInsightsWeb.Endpoint,
-      DevopsInsights.EventsIngestion.EventsStore
+      DevopsInsightsWeb.Endpoint
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

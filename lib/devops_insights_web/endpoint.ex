@@ -7,7 +7,7 @@ defmodule DevopsInsightsWeb.Endpoint do
   @session_options [
     store: :cookie,
     key: "_devops_insights_key",
-    signing_salt: "uej2scna",
+    signing_salt: "ZO2IYcH0",
     same_site: "Lax"
   ]
 

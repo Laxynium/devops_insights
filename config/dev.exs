@@ -23,7 +23,7 @@ config :devops_insights, DevopsInsightsWeb.Endpoint,
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
-  secret_key_base: "B0rKJGqw4Fg3PrFSvAQHLs9eFSphUAMr1FClLv8u15c1Hkez399IjgpAW2zz9D+n",
+  secret_key_base: "/DVYA0aBNbcIfqz5iM8gb1okN0Omu4sIosFDxqVaeI1XNKrN54+OrTMOUbrK/QL0",
   watchers: [
     esbuild: {Esbuild, :install_and_run, [:devops_insights, ~w(--sourcemap=inline --watch)]},
     tailwind: {Tailwind, :install_and_run, [:devops_insights, ~w(--watch)]}

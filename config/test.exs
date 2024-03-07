@@ -17,7 +17,7 @@ config :devops_insights, DevopsInsights.Repo,
 # you can enable the server option below.
 config :devops_insights, DevopsInsightsWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4002],
-  secret_key_base: "oLEs0n85hGKAqAG8F4rMX2wvrGZ2YHumgxb7sUZAWsivgdAWQ6mlmbnPJDl4ADqh",
+  secret_key_base: "VBNj0mRJcQvVWrrE3A7xuO3+srEoq4xa4jr3SQ2oJazEIRyadhzrdOrSNA8t9fwy",
   server: false
 
 # In test we don't send emails.

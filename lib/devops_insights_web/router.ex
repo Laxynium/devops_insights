@@ -1,33 +1,34 @@
 defmodule DevopsInsightsWeb.Router do
-  alias DevopsInsights.EventsIngestion
   use DevopsInsightsWeb, :router
 
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
     plug :fetch_live_flash
+    plug :put_root_layout, html: {DevopsInsightsWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
-  end
-
-  scope "/" do
-    pipe_through :browser
-
-    live "/events", EventsIngestion.DeploymentEventsLive
   end
 
   pipeline :api do
     plug :accepts, ["json"]
   end
 
-  scope "/api" do
+  scope "/", DevopsInsightsWeb do
+    pipe_through :browser
+
+    get "/", PageController, :home
+  end
+
+  # Other scopes may use custom stacks.
+  scope "/api", DevopsInsightsWeb do
     pipe_through :api
 
-    forward "/", DevopsInsights.EventsIngestion.Router
+    resources "/events", EventController, except: [:new, :edit]
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
-  if Application.compile_env(:crud_app, :dev_routes) do
+  if Application.compile_env(:devops_insights, :dev_routes) do
     # If you want to use the LiveDashboard in production, you should put
     # it behind authentication and allow only admins to access it.
     # If your application does not have an admins-only section yet,
@@ -38,7 +39,7 @@ defmodule DevopsInsightsWeb.Router do
     scope "/dev" do
       pipe_through :browser
 
-      live_dashboard "/dashboard", metrics: DevopsInsights.Telemetry
+      live_dashboard "/dashboard", metrics: DevopsInsightsWeb.Telemetry
       forward "/mailbox", Plug.Swoosh.MailboxPreview
     end
   end

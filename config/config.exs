@@ -20,7 +20,7 @@ config :devops_insights, DevopsInsightsWeb.Endpoint,
     layout: false
   ],
   pubsub_server: DevopsInsights.PubSub,
-  live_view: [signing_salt: "eLaAtsPv"]
+  live_view: [signing_salt: "PxLUvww7"]
 
 # Configures the mailer
 #
