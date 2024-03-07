@@ -1,0 +1,7 @@
+<.header>
+  Listing Events
+</.header>
+<%= for {_, event} <- @streams.events do %>
+  <li><%= event.environmnet %>, <%= event.serviceName %>, <%= event.timestamp %></li>
+<% end %>
+<ul></ul>
