@@ -1,7 +1,8 @@
 <.header>
   Listing Events
 </.header>
-<%= for {_, event} <- @streams.events do %>
-  <li><%= event.environmnet %>, <%= event.serviceName %>, <%= event.timestamp %></li>
-<% end %>
-<ul></ul>
+<ul id="events" phx-update="stream">
+  <li :for={{dom_id, event} <- @streams.events} id={dom_id}>
+    <%= event.serviceName %>, <%= event.environmnet %>, <%= event.timestamp %>
+  </li>
+</ul>

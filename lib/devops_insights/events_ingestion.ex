@@ -4,7 +4,7 @@ defmodule DevopsInsights.EventsIngestion do
   """
 
   import Ecto.Query, warn: false
-  alias Phoenix.PubSub
+  alias DevopsInsightsWeb.Endpoint
   alias DevopsInsights.Repo
 
   alias DevopsInsights.EventsIngestion.Event
@@ -24,7 +24,7 @@ defmodule DevopsInsights.EventsIngestion do
       |> Repo.insert()
 
     with {:ok, %Event{} = event} <- insert_result do
-      PubSub.broadcast(DevopsInsights.PubSub, "events", {:event_created, event})
+      Endpoint.broadcast("events", "event_ingested", event)
     end
 
     insert_result
