@@ -1,12 +1,8 @@
-defmodule DevopsInsightsWeb.EventLiveTest do
+defmodule DevopsInsights.EventsIngestion.EventLiveTest do
   use DevopsInsightsWeb.ConnCase
 
   import Phoenix.LiveViewTest
   import DevopsInsights.EventsIngestionFixtures
-
-  @create_attrs %{}
-  @update_attrs %{}
-  @invalid_attrs %{}
 
   defp create_event(_) do
     event = event_fixture()

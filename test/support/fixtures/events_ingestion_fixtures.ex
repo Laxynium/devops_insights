@@ -16,7 +16,7 @@ defmodule DevopsInsights.EventsIngestionFixtures do
         timestamp: ~U[2024-03-06 22:39:00Z],
         type: :deployment
       })
-      |> DevopsInsights.EventsIngestion.create_event()
+      |> DevopsInsights.EventsIngestion.Gateway.create_event()
 
     event
   end

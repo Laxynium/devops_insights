@@ -1,13 +1,12 @@
-defmodule DevopsInsightsWeb.EventLive.Index do
+defmodule DevopsInsights.EventsIngestion.EventLive.Index do
   alias DevopsInsightsWeb.Endpoint
   use DevopsInsightsWeb, :live_view
 
-  alias DevopsInsights.EventsIngestion
+  alias DevopsInsights.EventsIngestion.Gateway
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok,
-     stream(socket, :events, EventsIngestion.list_events() |> Enum.sort_by(& &1.timestamp, :desc))}
+    {:ok, stream(socket, :events, Gateway.list_events() |> Enum.sort_by(& &1.timestamp, :desc))}
   end
 
   @impl true

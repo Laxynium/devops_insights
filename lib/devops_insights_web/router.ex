@@ -18,15 +18,18 @@ defmodule DevopsInsightsWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
-
-    live "/events", EventLive.Index, :index
   end
 
-  # Other scopes may use custom stacks.
-  scope "/api", DevopsInsightsWeb do
+  scope "/", DevopsInsights do
+    pipe_through :browser
+
+    live "/events", EventsIngestion.EventLive.Index, :index
+  end
+
+  scope "/api", DevopsInsights do
     pipe_through :api
 
-    resources "/events", EventController, except: [:new, :edit]
+    resources "/events", EventsIngestion.EventController, except: [:new, :edit]
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

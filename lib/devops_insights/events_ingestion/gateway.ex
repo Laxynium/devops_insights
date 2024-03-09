@@ -1,4 +1,4 @@
-defmodule DevopsInsights.EventsIngestion do
+defmodule DevopsInsights.EventsIngestion.Gateway do
   @moduledoc """
   The EventsIngestion context.
   """

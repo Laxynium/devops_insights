@@ -1,7 +1,7 @@
-defmodule DevopsInsights.EventsIngestionTest do
+defmodule DevopsInsights.EventsIngestion.EventsIngestionTest do
   use DevopsInsights.DataCase
 
-  alias DevopsInsights.EventsIngestion
+  alias DevopsInsights.EventsIngestion.Gateway
 
   describe "events" do
     alias DevopsInsights.EventsIngestion.Event
@@ -12,7 +12,7 @@ defmodule DevopsInsights.EventsIngestionTest do
 
     test "list_events/0 returns all events" do
       event = event_fixture()
-      assert EventsIngestion.list_events() == [event]
+      assert Gateway.list_events() == [event]
     end
 
     test "create_event/1 with valid data creates a event" do
@@ -23,7 +23,7 @@ defmodule DevopsInsights.EventsIngestionTest do
         environmnet: "some environmnet"
       }
 
-      assert {:ok, %Event{} = event} = EventsIngestion.create_event(valid_attrs)
+      assert {:ok, %Event{} = event} = Gateway.create_event(valid_attrs)
       assert event.timestamp == ~U[2024-03-06 22:39:00Z]
       assert event.type == :deployment
       assert event.serviceName == "some serviceName"
@@ -31,7 +31,7 @@ defmodule DevopsInsights.EventsIngestionTest do
     end
 
     test "create_event/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = EventsIngestion.create_event(@invalid_attrs)
+      assert {:error, %Ecto.Changeset{}} = Gateway.create_event(@invalid_attrs)
     end
   end
 end

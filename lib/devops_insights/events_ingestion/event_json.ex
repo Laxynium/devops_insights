@@ -1,4 +1,4 @@
-defmodule DevopsInsightsWeb.EventJSON do
+defmodule DevopsInsights.EventsIngestion.EventJSON do
   alias DevopsInsights.EventsIngestion.Event
 
   @doc """
