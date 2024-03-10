@@ -34,4 +34,15 @@ defmodule DevopsInsights.EventsIngestion.Event do
       interval_in_days
     )
   end
+
+  @spec dimentions_matching?(Event.t(), %{}) :: boolean()
+  def dimentions_matching?(%Event{} = event, props) do
+    Enum.reduce(
+      props,
+      true,
+      fn {key, value}, acc ->
+        acc && (!Map.has_key?(event, key) || Map.get(event, key) === value)
+      end
+    )
+  end
 end

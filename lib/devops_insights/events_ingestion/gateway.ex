@@ -14,9 +14,11 @@ defmodule DevopsInsights.EventsIngestion.Gateway do
   end
 
   @type event_groups :: %{count: non_neg_integer(), group: non_neg_integer()}
-  @spec get_deployment_frequency_metric(Date.t(), Date.t(), non_neg_integer()) :: [event_groups()]
-  def get_deployment_frequency_metric(start, end_, interval_in_days) do
+  @spec get_deployment_frequency_metric(Date.t(), Date.t(), non_neg_integer(), keyword()) ::
+          [event_groups()]
+  def get_deployment_frequency_metric(start, end_, interval_in_days, dimensions \\ []) do
     Repo.all(Event)
+    |> Enum.filter(&Event.dimentions_matching?(&1, dimensions))
     |> Enum.filter(&Event.in_range?(&1, start, end_))
     |> Enum.group_by(&Event.calculate_group(&1, start, interval_in_days))
     |> Enum.map(fn {k, v} -> %{group: k, count: Enum.count(v)} end)
