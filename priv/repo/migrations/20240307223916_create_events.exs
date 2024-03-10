@@ -6,7 +6,7 @@ defmodule DevopsInsights.Repo.Migrations.CreateEvents do
       add :type, :string
       add :timestamp, :utc_datetime
       add :serviceName, :string
-      add :environmnet, :string
+      add :environment, :string
 
       timestamps(type: :utc_datetime)
     end

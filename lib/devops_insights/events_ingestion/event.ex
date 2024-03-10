@@ -9,7 +9,7 @@ defmodule DevopsInsights.EventsIngestion.Event do
     field :timestamp, :utc_datetime
     field :type, Ecto.Enum, values: [:deployment]
     field :serviceName, :string
-    field :environmnet, :string
+    field :environment, :string
 
     timestamps(type: :utc_datetime)
   end
@@ -17,8 +17,8 @@ defmodule DevopsInsights.EventsIngestion.Event do
   @doc false
   def changeset(event, attrs) do
     event
-    |> cast(attrs, [:type, :timestamp, :serviceName, :environmnet])
-    |> validate_required([:type, :timestamp, :serviceName, :environmnet])
+    |> cast(attrs, [:type, :timestamp, :serviceName, :environment])
+    |> validate_required([:type, :timestamp, :serviceName, :environment])
   end
 
   @spec in_range?(Event.t(), Date.t(), Date.t()) :: boolean()

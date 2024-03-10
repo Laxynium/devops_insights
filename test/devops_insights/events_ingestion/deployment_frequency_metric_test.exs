@@ -64,13 +64,13 @@ defmodule DevopsInsights.DeploymentFrequencyMetricTest do
 
     assert [%{count: 3, group: 0}] ==
              Gateway.get_deployment_frequency_metric(~D[2024-01-14], ~D[2024-01-17], 4,
-               environmnet: "qa"
+             environment: "qa"
              )
 
     assert [%{count: 1, group: 0}] ==
              Gateway.get_deployment_frequency_metric(~D[2024-01-14], ~D[2024-01-17], 4,
                serviceName: "app-2",
-               environmnet: "prod"
+               environment: "prod"
              )
 
     assert [%{count: 5, group: 0}] ==
@@ -84,7 +84,7 @@ defmodule DevopsInsights.DeploymentFrequencyMetricTest do
       timestamp: Keyword.get(props, :timestamp) || DateTime.utc_now(),
       type: :deployment,
       serviceName: Keyword.get(props, :service_name) || "devops_insights",
-      environmnet: Keyword.get(props, :environment) || "prod"
+      environment: Keyword.get(props, :environment) || "prod"
     }
   end
 end

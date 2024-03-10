@@ -21,7 +21,7 @@ defmodule DevopsInsights.EventsIngestion.EventJSON do
       type: event.type,
       timestamp: event.timestamp,
       serviceName: event.serviceName,
-      environmnet: event.environmnet
+      environment: event.environment
     }
   end
 end

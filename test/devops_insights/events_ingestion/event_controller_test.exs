@@ -5,7 +5,7 @@ defmodule DevopsInsights.EventsIngestion.EventControllerTest do
     timestamp: ~U[2024-03-06 22:39:00Z],
     type: :deployment,
     serviceName: "some serviceName",
-    environmnet: "some environmnet"
+    environment: "some environment"
   }
 
   setup %{conn: conn} do
@@ -28,7 +28,7 @@ defmodule DevopsInsights.EventsIngestion.EventControllerTest do
 
       assert %{
                "id" => ^id,
-               "environmnet" => "some environmnet",
+               "environment" => "some environment",
                "serviceName" => "some serviceName",
                "timestamp" => "2024-03-06T22:39:00Z",
                "type" => "deployment"

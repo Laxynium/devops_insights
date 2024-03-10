@@ -3,6 +3,6 @@
 </.header>
 <ul id="events" phx-update="stream">
   <li :for={{dom_id, event} <- @streams.events} id={dom_id}>
-    <%= event.serviceName %>, <%= event.environmnet %>, <%= event.timestamp %>
+    <%= event.serviceName %>, <%= event.environment %>, <%= event.timestamp %>
   </li>
 </ul>

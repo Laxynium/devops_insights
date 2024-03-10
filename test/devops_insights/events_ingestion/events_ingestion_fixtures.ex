@@ -11,7 +11,7 @@ defmodule DevopsInsights.EventsIngestionFixtures do
     {:ok, event} =
       attrs
       |> Enum.into(%{
-        environmnet: "some environmnet",
+        environment: "some environment",
         serviceName: "some serviceName",
         timestamp: ~U[2024-03-06 22:39:00Z],
         type: :deployment
