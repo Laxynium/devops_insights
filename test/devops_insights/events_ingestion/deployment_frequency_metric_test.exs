@@ -47,6 +47,20 @@ defmodule DevopsInsights.DeploymentFrequencyMetricTest do
              Gateway.get_deployment_frequency_metric(~D[2024-01-14], ~D[2024-01-20], 3)
   end
 
+  test "empty intervals" do
+    [
+      an_event(timestamp: ~U[2024-01-10 12:00:00Z]),
+      an_event(timestamp: ~U[2024-01-11 12:00:00Z]),
+      an_event(timestamp: ~U[2024-01-12 12:00:00Z]),
+      an_event(timestamp: ~U[2024-01-16 12:00:00Z]),
+      an_event(timestamp: ~U[2024-01-17 12:00:00Z])
+    ]
+    |> Enum.each(&Gateway.create_event(&1))
+
+    assert [%{count: 3, group: 0}, %{count: 0, group: 1}, %{count: 2, group: 2}] ==
+             Gateway.get_deployment_frequency_metric(~D[2024-01-10], ~D[2024-01-18], 3)
+  end
+
   test "filter by extra service & env dimension" do
     [
       an_event(timestamp: ~U[2024-01-14 12:00:00Z], service_name: "app-1", environment: "prod"),
@@ -64,7 +78,7 @@ defmodule DevopsInsights.DeploymentFrequencyMetricTest do
 
     assert [%{count: 3, group: 0}] ==
              Gateway.get_deployment_frequency_metric(~D[2024-01-14], ~D[2024-01-17], 4,
-             environment: "qa"
+               environment: "qa"
              )
 
     assert [%{count: 1, group: 0}] ==
