@@ -6,7 +6,23 @@ defmodule DevopsInsights.EventsIngestion.EventLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, stream(socket, :events, Gateway.list_events() |> Enum.sort_by(& &1.timestamp, :desc))}
+    events = Gateway.list_events() |> Enum.sort_by(& &1.timestamp, :desc)
+
+    now = DateTime.utc_now() |> DateTime.to_date()
+
+    deployment_frequency =
+      Gateway.get_deployment_frequency_metric(
+        now |> Date.add(-31),
+        now,
+        7
+      )
+      |> Enum.map(fn x -> %{id: x.group, group: x.group, count: x.count} end)
+
+    IO.inspect(deployment_frequency)
+
+    {:ok,
+     stream(socket, :events, events)
+     |> stream(:deployment_frequency, deployment_frequency)}
   end
 
   @impl true

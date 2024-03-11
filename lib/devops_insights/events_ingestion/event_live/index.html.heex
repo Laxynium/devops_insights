@@ -6,3 +6,9 @@
     <%= event.serviceName %>, <%= event.environment %>, <%= event.timestamp %>
   </li>
 </ul>
+
+<ul id="deployment_frequency" phx-update="stream">
+  <li :for={{dom_id, %{group: group, count: count}} <- @streams.deployment_frequency} id={dom_id}>
+    Group: <%= group %>, <%= count %>
+  </li>
+</ul>
