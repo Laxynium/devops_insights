@@ -19,9 +19,14 @@ defmodule DevopsInsights.EventsIngestion.Gateway do
   def get_deployment_frequency_metric(start, end_, interval_in_days, dimensions \\ []) do
     intervals =
       Stream.iterate(0, &(&1 + 1))
-      |> Enum.take(Float.ceil(Date.diff(Date.add(end_, 1), start) / interval_in_days) |> trunc())
+      |> Enum.take(((Date.diff(end_, start) / interval_in_days) |> trunc()) + 1)
       |> Enum.reduce(Map.new(), fn x, acc ->
-        Map.put(acc, x, %{group: x, count: 0, start: start, end: end_})
+        Map.put(acc, x, %{
+          group: x,
+          count: 0,
+          start: Date.add(start, x * interval_in_days),
+          end: min(end_, Date.add(start, (x + 1) * interval_in_days) |> Date.add(-1))
+        })
       end)
 
     Repo.all(Event)

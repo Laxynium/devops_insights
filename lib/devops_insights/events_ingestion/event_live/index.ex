@@ -8,19 +8,9 @@ defmodule DevopsInsights.EventsIngestion.EventLive.Index do
   def mount(_params, _session, socket) do
     events = Gateway.list_events() |> Enum.sort_by(& &1.timestamp, :desc)
 
-    now = DateTime.utc_now() |> DateTime.to_date()
-
-    deployment_frequency =
-      Gateway.get_deployment_frequency_metric(
-        now |> Date.add(-31),
-        now,
-        7
-      )
-      |> Enum.map(fn x -> %{id: x.group, group: x.group, count: x.count} end)
-
     {:ok,
      stream(socket, :events, events)
-     |> stream(:deployment_frequency, deployment_frequency)}
+     |> stream(:deployment_frequency, get_deployment_frequences_from_last_month())}
   end
 
   @impl true
@@ -31,6 +21,25 @@ defmodule DevopsInsights.EventsIngestion.EventLive.Index do
 
   @impl true
   def handle_info(%{event: "event_ingested", payload: event}, socket) do
-    {:noreply, stream_insert(socket, :events, event, at: 0)}
+    updated_socket = stream_insert(socket, :events, event, at: 0)
+
+    updated_socket =
+      get_deployment_frequences_from_last_month()
+      |> Enum.reduce(updated_socket, fn x, s -> stream_insert(s, :deployment_frequency, x) end)
+
+    {:noreply, updated_socket}
+  end
+
+  defp get_deployment_frequences_from_last_month() do
+    now = DateTime.utc_now() |> DateTime.to_date()
+
+    Gateway.get_deployment_frequency_metric(
+      now |> Date.add(-31),
+      now,
+      7
+    )
+    |> Enum.map(fn x ->
+      %{id: x.group, group: x.group, count: x.count, start: x.start, end: x.end}
+    end)
   end
 end

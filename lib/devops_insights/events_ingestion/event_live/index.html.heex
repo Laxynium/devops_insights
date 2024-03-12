@@ -8,7 +8,13 @@
 </ul>
 
 <ul id="deployment_frequency" phx-update="stream">
-  <li :for={{dom_id, %{group: group, count: count}} <- @streams.deployment_frequency} id={dom_id}>
-    Group: <%= group %>, <%= count %>
+  <li
+    :for={
+      {dom_id, %{group: group, count: count, start: start, end: end_}} <-
+        @streams.deployment_frequency
+    }
+    id={dom_id}
+  >
+    Group:[<%= start %>, <%= end_ %>] <%= group %>: <%= count %>
   </li>
 </ul>

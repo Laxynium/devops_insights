@@ -93,6 +93,37 @@ defmodule DevopsInsights.DeploymentFrequencyMetricTest do
              )
   end
 
+  test "calculate start and end for intervals" do
+    [
+      an_event(timestamp: ~U[2024-01-14 12:00:00Z], service_name: "app-1", environment: "prod"),
+      an_event(timestamp: ~U[2024-01-15 12:00:00Z], service_name: "app-1", environment: "prod"),
+      an_event(timestamp: ~U[2024-01-16 12:00:00Z], service_name: "app-1", environment: "prod"),
+      an_event(timestamp: ~U[2024-01-19 12:00:00Z], service_name: "app-1", environment: "prod"),
+      an_event(timestamp: ~U[2024-01-20 12:00:00Z], service_name: "app-1", environment: "prod"),
+      an_event(timestamp: ~U[2024-01-21 12:00:00Z], service_name: "app-1", environment: "prod")
+    ]
+    |> Enum.each(&Gateway.create_event(&1))
+
+    assert [%{start: ~D[2024-01-14], end: ~D[2024-01-14]}] =
+             Gateway.get_deployment_frequency_metric(~D[2024-01-14], ~D[2024-01-14], 1)
+
+    assert [%{start: ~D[2024-01-14], end: ~D[2024-01-15]}] =
+             Gateway.get_deployment_frequency_metric(~D[2024-01-14], ~D[2024-01-15], 2)
+
+    assert [
+             %{start: ~D[2024-01-14], end: ~D[2024-01-15]},
+             %{start: ~D[2024-01-16], end: ~D[2024-01-16]}
+           ] =
+             Gateway.get_deployment_frequency_metric(~D[2024-01-14], ~D[2024-01-16], 2)
+
+    assert [
+             %{start: ~D[2024-01-14], end: ~D[2024-01-18]},
+             %{start: ~D[2024-01-19], end: ~D[2024-01-23]},
+             %{start: ~D[2024-01-24], end: ~D[2024-01-25]}
+           ] =
+             Gateway.get_deployment_frequency_metric(~D[2024-01-14], ~D[2024-01-25], 5)
+  end
+
   defp an_event(props) do
     %{
       timestamp: Keyword.get(props, :timestamp) || DateTime.utc_now(),

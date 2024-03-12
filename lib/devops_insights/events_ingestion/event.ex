@@ -23,8 +23,8 @@ defmodule DevopsInsights.EventsIngestion.Event do
 
   @spec in_range?(Event.t(), Date.t(), Date.t()) :: boolean()
   def in_range?(%Event{timestamp: timestamp}, start, end_) do
-    start <= DateTime.to_date(timestamp) &&
-      DateTime.to_date(timestamp) <= end_
+    Date.compare(DateTime.to_date(timestamp), start) in [:gt, :eq] &&
+      Date.compare(DateTime.to_date(timestamp), end_) in [:lt, :eq]
   end
 
   @spec calculate_group(Event.t(), Date.t(), non_neg_integer()) :: non_neg_integer()
