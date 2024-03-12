@@ -18,8 +18,6 @@ defmodule DevopsInsights.EventsIngestion.EventLive.Index do
       )
       |> Enum.map(fn x -> %{id: x.group, group: x.group, count: x.count} end)
 
-    IO.inspect(deployment_frequency)
-
     {:ok,
      stream(socket, :events, events)
      |> stream(:deployment_frequency, deployment_frequency)}

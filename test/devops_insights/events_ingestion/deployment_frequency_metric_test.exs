@@ -12,7 +12,7 @@ defmodule DevopsInsights.DeploymentFrequencyMetricTest do
     ]
     |> Enum.each(&Gateway.create_event(&1))
 
-    assert [%{count: 3, group: 0}] ==
+    assert [%{count: 3, group: 0}] =
              Gateway.get_deployment_frequency_metric(~D[2024-01-15], ~D[2024-01-15], 1)
   end
 
@@ -26,7 +26,7 @@ defmodule DevopsInsights.DeploymentFrequencyMetricTest do
     ]
     |> Enum.each(&Gateway.create_event(&1))
 
-    assert [%{count: 1, group: 0}, %{count: 3, group: 1}, %{count: 1, group: 2}] ==
+    assert [%{count: 1, group: 0}, %{count: 3, group: 1}, %{count: 1, group: 2}] =
              Gateway.get_deployment_frequency_metric(~D[2024-01-14], ~D[2024-01-16], 1)
   end
 
@@ -43,7 +43,7 @@ defmodule DevopsInsights.DeploymentFrequencyMetricTest do
     ]
     |> Enum.each(&Gateway.create_event(&1))
 
-    assert [%{count: 5, group: 0}, %{count: 2, group: 1}, %{count: 1, group: 2}] ==
+    assert [%{count: 5, group: 0}, %{count: 2, group: 1}, %{count: 1, group: 2}] =
              Gateway.get_deployment_frequency_metric(~D[2024-01-14], ~D[2024-01-20], 3)
   end
 
@@ -57,7 +57,7 @@ defmodule DevopsInsights.DeploymentFrequencyMetricTest do
     ]
     |> Enum.each(&Gateway.create_event(&1))
 
-    assert [%{count: 3, group: 0}, %{count: 0, group: 1}, %{count: 2, group: 2}] ==
+    assert [%{count: 3, group: 0}, %{count: 0, group: 1}, %{count: 2, group: 2}] =
              Gateway.get_deployment_frequency_metric(~D[2024-01-10], ~D[2024-01-18], 3)
   end
 
@@ -71,23 +71,23 @@ defmodule DevopsInsights.DeploymentFrequencyMetricTest do
     ]
     |> Enum.each(&Gateway.create_event(&1))
 
-    assert [%{count: 3, group: 0}] ==
+    assert [%{count: 3, group: 0}] =
              Gateway.get_deployment_frequency_metric(~D[2024-01-14], ~D[2024-01-17], 4,
                serviceName: "app-1"
              )
 
-    assert [%{count: 3, group: 0}] ==
+    assert [%{count: 3, group: 0}] =
              Gateway.get_deployment_frequency_metric(~D[2024-01-14], ~D[2024-01-17], 4,
                environment: "qa"
              )
 
-    assert [%{count: 1, group: 0}] ==
+    assert [%{count: 1, group: 0}] =
              Gateway.get_deployment_frequency_metric(~D[2024-01-14], ~D[2024-01-17], 4,
                serviceName: "app-2",
                environment: "prod"
              )
 
-    assert [%{count: 5, group: 0}] ==
+    assert [%{count: 5, group: 0}] =
              Gateway.get_deployment_frequency_metric(~D[2024-01-14], ~D[2024-01-17], 4,
                not_found_prop: "any"
              )
