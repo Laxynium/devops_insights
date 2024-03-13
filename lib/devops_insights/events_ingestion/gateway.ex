@@ -17,6 +17,10 @@ defmodule DevopsInsights.EventsIngestion.Gateway do
   @spec get_deployment_frequency_metric(Date.t(), Date.t(), non_neg_integer(), keyword()) ::
           [event_groups()]
   def get_deployment_frequency_metric(start, end_, interval_in_days, dimensions \\ []) do
+    IO.inspect(start)
+    IO.inspect(end_)
+    IO.inspect(interval_in_days)
+
     intervals =
       Stream.iterate(0, &(&1 + 1))
       |> Enum.take(((Date.diff(end_, start) / interval_in_days) |> trunc()) + 1)

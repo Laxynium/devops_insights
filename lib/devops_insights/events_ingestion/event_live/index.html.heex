@@ -1,20 +1,20 @@
 <.header>
   Listing Events
 </.header>
+
+<button phx-click="change-interval">
+  Click me
+</button>
+
+<p>Start: <%= @start_date %>, End: <%= @end_date %>, Interval: <%= @interval %></p>
+<ul id="deployment_frequency">
+  <li :for={%{group: group, count: count, start: start, end: end_} <- @deployment_frequency}>
+    Group:[<%= start %>, <%= end_ %>] <%= group %>: <%= count %>
+  </li>
+</ul>
+<p>&nbsp;</p>
 <ul id="events" phx-update="stream">
   <li :for={{dom_id, event} <- @streams.events} id={dom_id}>
     <%= event.serviceName %>, <%= event.environment %>, <%= event.timestamp %>
-  </li>
-</ul>
-
-<ul id="deployment_frequency" phx-update="stream">
-  <li
-    :for={
-      {dom_id, %{group: group, count: count, start: start, end: end_}} <-
-        @streams.deployment_frequency
-    }
-    id={dom_id}
-  >
-    Group:[<%= start %>, <%= end_ %>] <%= group %>: <%= count %>
   </li>
 </ul>
