@@ -12,12 +12,18 @@ defmodule DevopsInsights.EventsIngestion.EventLive.Index do
     start_date = Date.utc_today() |> Date.add(-13)
     end_date = Date.utc_today()
     interval_in_days = 7
+    intervals_to_choose = ["1 day": 1, "1 week": 7, "2 weeks": 14, "1 month": 30]
 
     {:ok,
      stream(socket, :events, events)
+     |> assign(:intervals_to_choose, intervals_to_choose)
      |> assign(:start_date, start_date)
      |> assign(:end_date, end_date)
      |> assign(:interval, interval_in_days)
+     |> assign(
+       :search_form,
+       to_form(%{start_date: start_date, end_date: end_date, interval: interval_in_days})
+     )
      |> assign(
        :deployment_frequency,
        get_deployment_frequences(start_date, end_date, interval_in_days)

@@ -1,20 +1,32 @@
 <.header>
-  Listing Events
+  Deployment frequency
 </.header>
 
-<button phx-click="change-interval">
-  Click me
-</button>
+<div class="flex space-x-4 w-full">
+  <div class="flex-1">
+    <label for="start-date" class="block text-sm font-medium text-gray-700">Start date</label>
+    <input type="date" id="start-date" value={@start_date} class="mt-1 p-2 w-full border border-gray-300 rounded">
+  </div>
+  <div class="flex-1">
+    <label for="end-date" class="block text-sm font-medium text-gray-700">End date</label>
+    <input type="date" id="end-date" value={@end_date} class="mt-1 p-2 w-full border border-gray-300 rounded">
+  </div>
+  <div class="flex-1">
+    <label for="duration" class="block text-sm font-medium text-gray-700">Interval</label>
+    <select id="duration" name="duration" value={@interval}
+      class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+      <%= Phoenix.HTML.Form.options_for_select(@intervals_to_choose, @interval) %>
+    </select>
+  </div>
+  <button class="bg-blue-500 hover:bg-blue-700 font-bold py-2 px-4 rounded-full">
+    Apply
+  </button>
+</div>
 
-<p>Start: <%= @start_date %>, End: <%= @end_date %>, Interval: <%= @interval %></p>
+<p>Start: <%= @start_date %>, End: <%= @end_date %>, Interval: <%= @interval %>
+</p>
 <ul id="deployment_frequency">
   <li :for={%{group: group, count: count, start: start, end: end_} <- @deployment_frequency}>
     Group:[<%= start %>, <%= end_ %>] <%= group %>: <%= count %>
-  </li>
-</ul>
-<p>&nbsp;</p>
-<ul id="events" phx-update="stream">
-  <li :for={{dom_id, event} <- @streams.events} id={dom_id}>
-    <%= event.serviceName %>, <%= event.environment %>, <%= event.timestamp %>
   </li>
 </ul>
