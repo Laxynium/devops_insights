@@ -15,7 +15,7 @@ defmodule DevopsInsights.EventsIngestion.EventLiveTest do
     test "lists all events", %{conn: conn} do
       {:ok, _index_live, html} = live(conn, ~p"/events")
 
-      assert html =~ "Listing Events"
+      assert html =~ "Deployment frequency"
     end
   end
 end
