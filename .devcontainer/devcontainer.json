@@ -9,5 +9,6 @@
                 "phoenixframework.phoenix"
             ]
         }
-    }
+    },
+    "postStartCommand": "mix deps.get && mix tailwind.install && mix assets.setup &&mix ecto.create && mix ecto.migrate"
 }
