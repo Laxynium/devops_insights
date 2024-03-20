@@ -2,26 +2,29 @@
   Deployment frequency
 </.header>
 
-<div class="flex space-x-4 w-full">
-  <div class="flex-1">
-    <label for="start-date" class="block text-sm font-medium text-gray-700">Start date</label>
-    <input type="date" id="start-date" value={@start_date} class="mt-1 p-2 w-full border border-gray-300 rounded">
+<form phx-submit="apply_filters">
+  <div class="flex space-x-4 w-full">
+    <div class="flex-1">
+      <label for="start_date" class="block text-sm font-medium text-gray-700">Start date</label>
+      <input type="date" id="start-date" name="start_date" value={@start_date}
+        class="mt-1 p-2 w-full border border-gray-300 rounded">
+    </div>
+    <div class="flex-1">
+      <label for="end_date" class="block text-sm font-medium text-gray-700">End date</label>
+      <input type="date" id="end_date" name="end_date" value={@end_date}
+        class="mt-1 p-2 w-full border border-gray-300 rounded">
+    </div>
+    <div class="flex-1">
+      <label for="interval" class="block text-sm font-medium text-gray-700">Interval</label>
+      <select id="interval" name="interval" value={@interval}
+        class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+        <%= Phoenix.HTML.Form.options_for_select(@intervals_to_choose, @interval) %>
+      </select>
+    </div>
+    <button type="submit">Apply</button>
   </div>
-  <div class="flex-1">
-    <label for="end-date" class="block text-sm font-medium text-gray-700">End date</label>
-    <input type="date" id="end-date" value={@end_date} class="mt-1 p-2 w-full border border-gray-300 rounded">
-  </div>
-  <div class="flex-1">
-    <label for="duration" class="block text-sm font-medium text-gray-700">Interval</label>
-    <select id="duration" name="duration" value={@interval}
-      class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-      <%= Phoenix.HTML.Form.options_for_select(@intervals_to_choose, @interval) %>
-    </select>
-  </div>
-  <button class="bg-blue-500 hover:bg-blue-700 font-bold py-2 px-4 rounded-full">
-    Apply
-  </button>
-</div>
+</form>
+
 
 <p>Start: <%= @start_date %>, End: <%= @end_date %>, Interval: <%= @interval %>
 </p>

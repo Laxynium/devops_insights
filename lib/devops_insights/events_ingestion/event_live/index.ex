@@ -38,22 +38,38 @@ defmodule DevopsInsights.EventsIngestion.EventLive.Index do
 
   @impl true
   def handle_event(
-        "change-interval",
-        _,
-        %{assigns: %{start_date: start_date, end_date: end_date, interval: interval_in_days}} =
-          socket
+        "apply_filters",
+        %{"start_date" => start_date, "end_date" => end_date, "interval" => interval_in_days},
+        socket
       ) do
-    {:noreply,
-     socket
-     |> assign(:start_date, start_date |> Date.add(-1))
-     |> assign(
-       :deployment_frequency,
-       get_deployment_frequences(
-         start_date |> Date.add(-1),
-         end_date,
-         interval_in_days
-       )
-     )}
+    {:ok, start_date} = Date.from_iso8601(start_date)
+    {:ok, end_date} = Date.from_iso8601(end_date)
+    {interval_in_days, _} = Integer.parse(interval_in_days)
+
+    updated_socket =
+      socket
+      |> assign(
+        :start_date,
+        start_date
+      )
+      |> assign(
+        :end_date,
+        end_date
+      )
+      |> assign(
+        :interval,
+        interval_in_days
+      )
+      |> assign(
+        :deployment_frequency,
+        get_deployment_frequences(
+          start_date,
+          end_date,
+          interval_in_days
+        )
+      )
+
+    {:noreply, updated_socket}
   end
 
   @impl true
