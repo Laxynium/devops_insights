@@ -21,7 +21,18 @@
         <%= Phoenix.HTML.Form.options_for_select(@intervals_to_choose, @interval) %>
       </select>
     </div>
-    <button type="submit">Apply</button>
+    <div class="flex-1">
+      <div>&nbsp;</div>
+      <button type="submit"
+        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+        <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+          width="24" height="24" fill="none" viewBox="0 0 24 24">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M5 11.917 9.724 16.5 19 7.5" />
+        </svg>
+        <span class="sr-only">Icon description</span>
+      </button>
+    </div>
   </div>
 </form>
 
