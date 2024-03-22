@@ -1,5 +1,6 @@
 defmodule DevopsInsights.EventsIngestion.EventLive.Index do
   require Logger
+  alias DevopsInsights.EventsIngestion.EventsFilter
   alias DevopsInsightsWeb.Endpoint
   use DevopsInsightsWeb, :live_view
 
@@ -9,24 +10,22 @@ defmodule DevopsInsights.EventsIngestion.EventLive.Index do
   def mount(_params, _session, socket) do
     events = Gateway.list_events() |> Enum.sort_by(& &1.timestamp, :desc)
 
-    start_date = Date.utc_today() |> Date.add(-13)
-    end_date = Date.utc_today()
-    interval_in_days = 7
     intervals_to_choose = ["1 day": 1, "1 week": 7, "2 weeks": 14, "1 month": 30]
+
+    search_filters = %EventsFilter{
+      start_date: Date.utc_today() |> Date.add(-13),
+      end_date: Date.utc_today(),
+      interval: 7
+    }
 
     {:ok,
      stream(socket, :events, events)
      |> assign(:intervals_to_choose, intervals_to_choose)
-     |> assign(:start_date, start_date)
-     |> assign(:end_date, end_date)
-     |> assign(:interval, interval_in_days)
-     |> assign(
-       :search_form,
-       to_form(%{start_date: start_date, end_date: end_date, interval: interval_in_days})
-     )
+     |> assign(search_filters |> EventsFilter.to_map())
+     |> assign(:search_form, search_filters |> EventsFilter.to_map() |> to_form())
      |> assign(
        :deployment_frequency,
-       get_deployment_frequences(start_date, end_date, interval_in_days)
+       Gateway.get_deployment_frequency_metric(search_filters)
      )}
   end
 
@@ -39,44 +38,27 @@ defmodule DevopsInsights.EventsIngestion.EventLive.Index do
   @impl true
   def handle_event(
         "apply_filters",
-        %{"start_date" => start_date, "end_date" => end_date, "interval" => interval_in_days},
+        %{"start_date" => _, "end_date" => _, "interval" => _} =
+          search_filters,
         socket
       ) do
-    {:ok, start_date} = Date.from_iso8601(start_date)
-    {:ok, end_date} = Date.from_iso8601(end_date)
-    {interval_in_days, _} = Integer.parse(interval_in_days)
-
-    updated_socket =
-      socket
-      |> assign(
-        :start_date,
-        start_date
-      )
-      |> assign(
-        :end_date,
-        end_date
-      )
-      |> assign(
-        :interval,
-        interval_in_days
-      )
-      |> assign(
-        :deployment_frequency,
-        get_deployment_frequences(
-          start_date,
-          end_date,
-          interval_in_days
-        )
-      )
-
-    {:noreply, updated_socket}
+    with {:ok, search_filters} = EventsFilter.from_map(search_filters) do
+      {:noreply,
+       socket
+       |> assign(EventsFilter.to_map(search_filters))
+       |> assign(
+         :deployment_frequency,
+         Gateway.get_deployment_frequency_metric(search_filters)
+       )}
+    else
+      _ -> {:noreply, socket}
+    end
   end
 
   @impl true
   def handle_info(
         %{event: "event_ingested", payload: event},
-        %{assigns: %{start_date: start_date, end_date: end_date, interval: interval_in_days}} =
-          socket
+        %{assigns: %{start_date: _, end_date: _, interval: _} = search_filters} = socket
       ) do
     updated_socket = stream_insert(socket, :events, event, at: 0)
 
@@ -84,17 +66,9 @@ defmodule DevopsInsights.EventsIngestion.EventLive.Index do
       updated_socket
       |> assign(
         :deployment_frequency,
-        get_deployment_frequences(start_date, end_date, interval_in_days)
+        Gateway.get_deployment_frequency_metric(search_filters)
       )
 
     {:noreply, updated_socket}
-  end
-
-  defp get_deployment_frequences(start, end_, interval_in_days) do
-    Gateway.get_deployment_frequency_metric(
-      start,
-      end_,
-      interval_in_days
-    )
   end
 end

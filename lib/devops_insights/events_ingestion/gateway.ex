@@ -4,6 +4,7 @@ defmodule DevopsInsights.EventsIngestion.Gateway do
   """
 
   import Ecto.Query, warn: false
+  alias DevopsInsights.EventsIngestion.EventsFilter
   alias DevopsInsightsWeb.Endpoint
   alias DevopsInsights.Repo
 
@@ -14,13 +15,21 @@ defmodule DevopsInsights.EventsIngestion.Gateway do
   end
 
   @type event_groups :: %{count: non_neg_integer(), group: non_neg_integer()}
+
+  @spec get_deployment_frequency_metric(%EventsFilter{}, keyword()) ::
+          [event_groups()]
+  def get_deployment_frequency_metric(%EventsFilter{} = events_filter, dimensions \\ []) do
+    get_deployment_frequency_metric(
+      events_filter.start_date,
+      events_filter.end_date,
+      events_filter.interval,
+      dimensions
+    )
+  end
+
   @spec get_deployment_frequency_metric(Date.t(), Date.t(), non_neg_integer(), keyword()) ::
           [event_groups()]
-  def get_deployment_frequency_metric(start, end_, interval_in_days, dimensions \\ []) do
-    IO.inspect(start)
-    IO.inspect(end_)
-    IO.inspect(interval_in_days)
-
+  defp get_deployment_frequency_metric(start, end_, interval_in_days, dimensions \\ []) do
     intervals =
       Stream.iterate(0, &(&1 + 1))
       |> Enum.take(((Date.diff(end_, start) / interval_in_days) |> trunc()) + 1)

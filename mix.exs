@@ -61,7 +61,8 @@ defmodule DevopsInsights.MixProject do
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.2"},
-      {:typed_ecto_schema, "~>0.4.1"}
+      {:typed_ecto_schema, "~>0.4.1"},
+      {:result, "~> 1.7"}
     ]
   end
 
