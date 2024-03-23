@@ -58,7 +58,7 @@ config :devops_insights, DevopsInsightsWeb.Endpoint,
     patterns: [
       ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
       ~r"priv/gettext/.*(po)$",
-      ~r"lib/devops_insights_web/(controllers|live|components)/.*(ex|heex)$"
+      ~r"lib/devops_insights.*/(controllers|live|components)/.*(ex|heex)$"
     ]
   ]
 
