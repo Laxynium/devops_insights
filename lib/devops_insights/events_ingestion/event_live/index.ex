@@ -1,5 +1,10 @@
 defmodule DevopsInsights.EventsIngestion.EventLive.Index do
   require Logger
+  alias Contex.Scale
+  alias Contex.ContinuousLinearScale
+  alias Contex.PointPlot
+  alias Contex.Dataset
+  alias Contex.Plot
   alias DevopsInsights.EventsIngestion.EventsFilter
   alias DevopsInsightsWeb.Endpoint
   use DevopsInsightsWeb, :live_view
@@ -15,17 +20,51 @@ defmodule DevopsInsights.EventsIngestion.EventLive.Index do
     search_filters = %EventsFilter{
       start_date: Date.utc_today() |> Date.add(-13),
       end_date: Date.utc_today(),
-      interval: 7
+      interval: 1
     }
+
+    deployment_frequency = Gateway.get_deployment_frequency_metric(search_filters)
+
+    data =
+      deployment_frequency
+      |> Enum.map(fn %{count: count, group: interval} -> {interval, count} end)
+
+    {min_interval, max_interval} =
+      deployment_frequency
+      |> Enum.map(fn %{group: group} -> group end)
+      |> Enum.min_max()
+
+    {min_count, max_count} =
+      deployment_frequency
+      |> Enum.map(fn %{count: count} -> count end)
+      |> Enum.min_max()
+
+    x_scale =
+      ContinuousLinearScale.new()
+      |> ContinuousLinearScale.domain(min_interval, max_interval)
+      |> ContinuousLinearScale.interval_count(max_interval - min_interval + 1)
+
+    y_scale =
+      ContinuousLinearScale.new()
+      |> ContinuousLinearScale.domain(min_count, max_count)
+      |> ContinuousLinearScale.interval_count(max_count - min_count + 1)
+
+    ds = Dataset.new(data)
+
+    chart_svg =
+      Plot.new(ds, PointPlot, 600, 400, custom_x_scale: x_scale, custom_y_scale: y_scale)
+      |> Plot.axis_labels("Interval", "Count")
+      |> Plot.to_svg()
 
     {:ok,
      stream(socket, :events, events)
      |> assign(:intervals_to_choose, intervals_to_choose)
      |> assign(search_filters |> EventsFilter.to_map())
      |> assign(:search_form, search_filters |> EventsFilter.to_map() |> to_form())
+     |> assign(:chart_svg, chart_svg)
      |> assign(
        :deployment_frequency,
-       Gateway.get_deployment_frequency_metric(search_filters)
+       deployment_frequency
      )}
   end
 
