@@ -1,6 +1,5 @@
 defmodule DevopsInsights.EventsIngestion.EventLive.Index do
   require Logger
-  alias Contex.Scale
   alias Contex.ContinuousLinearScale
   alias Contex.PointPlot
   alias Contex.Dataset
@@ -25,43 +24,12 @@ defmodule DevopsInsights.EventsIngestion.EventLive.Index do
 
     deployment_frequency = Gateway.get_deployment_frequency_metric(search_filters)
 
-    data =
-      deployment_frequency
-      |> Enum.map(fn %{count: count, group: interval} -> {interval, count} end)
-
-    {min_interval, max_interval} =
-      deployment_frequency
-      |> Enum.map(fn %{group: group} -> group end)
-      |> Enum.min_max()
-
-    {min_count, max_count} =
-      deployment_frequency
-      |> Enum.map(fn %{count: count} -> count end)
-      |> Enum.min_max()
-
-    x_scale =
-      ContinuousLinearScale.new()
-      |> ContinuousLinearScale.domain(min_interval, max_interval)
-      |> ContinuousLinearScale.interval_count(max_interval - min_interval + 1)
-
-    y_scale =
-      ContinuousLinearScale.new()
-      |> ContinuousLinearScale.domain(min_count, max_count)
-      |> ContinuousLinearScale.interval_count(max_count - min_count + 1)
-
-    ds = Dataset.new(data)
-
-    chart_svg =
-      Plot.new(ds, PointPlot, 600, 400, custom_x_scale: x_scale, custom_y_scale: y_scale)
-      |> Plot.axis_labels("Interval", "Count")
-      |> Plot.to_svg()
-
     {:ok,
      stream(socket, :events, events)
      |> assign(:intervals_to_choose, intervals_to_choose)
      |> assign(search_filters |> EventsFilter.to_map())
      |> assign(:search_form, search_filters |> EventsFilter.to_map() |> to_form())
-     |> assign(:chart_svg, chart_svg)
+     |> assign(:chart_svg, render_chart(deployment_frequency))
      |> assign(
        :deployment_frequency,
        deployment_frequency
@@ -82,13 +50,13 @@ defmodule DevopsInsights.EventsIngestion.EventLive.Index do
         socket
       ) do
     with {:ok, search_filters} = EventsFilter.from_map(search_filters) do
+      deployment_frequency = Gateway.get_deployment_frequency_metric(search_filters)
+
       {:noreply,
        socket
        |> assign(EventsFilter.to_map(search_filters))
-       |> assign(
-         :deployment_frequency,
-         Gateway.get_deployment_frequency_metric(search_filters)
-       )}
+       |> assign(:deployment_frequency, deployment_frequency)
+       |> assign(:chart_svg, render_chart(deployment_frequency))}
     else
       _ -> {:noreply, socket}
     end
@@ -97,17 +65,57 @@ defmodule DevopsInsights.EventsIngestion.EventLive.Index do
   @impl true
   def handle_info(
         %{event: "event_ingested", payload: event},
-        %{assigns: %{start_date: _, end_date: _, interval: _} = search_filters} = socket
+        %{
+          assigns: %{start_date: start_date, end_date: end_date, interval: interval}
+        } = socket
       ) do
     updated_socket = stream_insert(socket, :events, event, at: 0)
 
+    search_filters = %EventsFilter{
+      start_date: start_date,
+      end_date: end_date,
+      interval: interval
+    }
+
+    deployment_frequency = Gateway.get_deployment_frequency_metric(search_filters)
+
     updated_socket =
       updated_socket
-      |> assign(
-        :deployment_frequency,
-        Gateway.get_deployment_frequency_metric(search_filters)
-      )
+      |> assign(:deployment_frequency, deployment_frequency)
+      |> assign(:chart_svg, render_chart(deployment_frequency))
 
     {:noreply, updated_socket}
+  end
+
+  defp render_chart(deployment_frequency) do
+    data =
+      deployment_frequency
+      |> Enum.map(fn %{count: count, group: interval} -> {interval, count} end)
+
+    {_, max_interval} =
+      deployment_frequency
+      |> Enum.map(fn %{group: group} -> group end)
+      |> Enum.min_max()
+
+    {_, max_count} =
+      deployment_frequency
+      |> Enum.map(fn %{count: count} -> count end)
+      |> Enum.min_max()
+
+    x_scale =
+      ContinuousLinearScale.new()
+      |> ContinuousLinearScale.domain(0, max_interval)
+      |> ContinuousLinearScale.interval_count(max_interval + 1)
+
+    y_scale =
+      ContinuousLinearScale.new()
+      |> ContinuousLinearScale.domain(0, max_count)
+      |> ContinuousLinearScale.interval_count(max_count + 1)
+
+    ds = Dataset.new(data)
+
+    Plot.new(ds, PointPlot, 600, 400, custom_x_scale: x_scale, custom_y_scale: y_scale)
+    |> Plot.axis_labels("Interval", "Count")
+    |> Plot.to_svg()
   end
 end
