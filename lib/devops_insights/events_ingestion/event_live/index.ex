@@ -1,5 +1,6 @@
 defmodule DevopsInsights.EventsIngestion.EventLive.Index do
   require Logger
+  alias Contex.BarChart
   alias Contex.ContinuousLinearScale
   alias Contex.PointPlot
   alias Contex.Dataset
@@ -90,31 +91,13 @@ defmodule DevopsInsights.EventsIngestion.EventLive.Index do
   defp render_chart(deployment_frequency) do
     data =
       deployment_frequency
-      |> Enum.map(fn %{count: count, group: interval} -> {interval, count} end)
-
-    {_, max_interval} =
-      deployment_frequency
-      |> Enum.map(fn %{group: group} -> group end)
-      |> Enum.min_max()
-
-    {_, max_count} =
-      deployment_frequency
-      |> Enum.map(fn %{count: count} -> count end)
-      |> Enum.min_max()
-
-    x_scale =
-      ContinuousLinearScale.new()
-      |> ContinuousLinearScale.domain(0, max_interval)
-      |> ContinuousLinearScale.interval_count(max_interval + 1)
-
-    y_scale =
-      ContinuousLinearScale.new()
-      |> ContinuousLinearScale.domain(0, max_count)
-      |> ContinuousLinearScale.interval_count(max_count + 1)
+      |> Enum.map(fn %{count: count, group: interval, start: start_date, end: end_date} ->
+        {"[#{start_date};#{end_date}]", count}
+      end)
 
     ds = Dataset.new(data)
 
-    Plot.new(ds, PointPlot, 600, 400, custom_x_scale: x_scale, custom_y_scale: y_scale)
+    Plot.new(ds, BarChart, 600, 400, custom_value_formatter: &"#{trunc(&1)}")
     |> Plot.axis_labels("Interval", "Count")
     |> Plot.to_svg()
   end

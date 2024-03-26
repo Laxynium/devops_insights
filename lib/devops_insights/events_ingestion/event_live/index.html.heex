@@ -35,15 +35,6 @@
     </div>
   </div>
 </form>
-
-<p>Start: <%= @start_date %>, End: <%= @end_date %>, Interval: <%= @interval %>
-</p>
-<ul id="deployment_frequency">
-  <li :for={%{group: group, count: count, start: start, end: end_} <- @deployment_frequency}>
-    Group:[<%= start %>, <%= end_ %>] <%= group %>: <%= count %>
-  </li>
-</ul>
-
 <div>
   <%= @chart_svg %>
 </div>
