@@ -1,5 +1,6 @@
 defmodule DevopsInsights.EventsIngestion.EventLive.Index do
   require Logger
+  alias DevopsInsights.EventsIngestion.Event
   alias Contex.BarChart
   alias Contex.ContinuousLinearScale
   alias Contex.PointPlot
@@ -15,6 +16,24 @@ defmodule DevopsInsights.EventsIngestion.EventLive.Index do
   def mount(_params, _session, socket) do
     events = Gateway.list_events() |> Enum.sort_by(& &1.timestamp, :desc)
 
+    dimentions = %{
+      serviceName: %{displayName: "Service Name", values: MapSet.new()},
+      environment: %{displayName: "Environment", values: MapSet.new()}
+    }
+
+    selectable_dimentions =
+      events
+      |> Enum.reduce(dimentions, fn event, acc ->
+        Map.keys(acc)
+        |> Enum.reduce(acc, fn dim, result ->
+          Map.update!(result, dim, fn %{} = nested ->
+            Map.put(nested, :values, MapSet.put(nested.values, Map.get(event, dim)))
+          end)
+        end)
+      end)
+
+    IO.inspect(selectable_dimentions)
+
     intervals_to_choose = ["1 day": 1, "1 week": 7, "2 weeks": 14, "1 month": 30]
 
     search_filters = %EventsFilter{
@@ -28,6 +47,7 @@ defmodule DevopsInsights.EventsIngestion.EventLive.Index do
     {:ok,
      stream(socket, :events, events)
      |> assign(:intervals_to_choose, intervals_to_choose)
+     |> assign(:selectable_dimentions, selectable_dimentions)
      |> assign(search_filters |> EventsFilter.to_map())
      |> assign(:search_form, search_filters |> EventsFilter.to_map() |> to_form())
      |> assign(:chart_svg, render_chart(deployment_frequency))

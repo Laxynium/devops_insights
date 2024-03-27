@@ -4,6 +4,17 @@
 
 <form phx-submit="apply_filters">
   <div class="flex space-x-4 w-full">
+    <div class="flex-1" :for={{dim, %{displayName: displayName, values: values}} <- @selectable_dimentions}>
+      <label for="service_name" class="block text-sm font-medium text-gray-700">
+        <%= displayName %>
+      </label>
+      <select id="interval" name="interval" value={@interval}
+        class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+        <%= Phoenix.HTML.Form.options_for_select(values, nil) %>
+      </select>
+    </div>
+  </div>
+  <div class="flex space-x-4 w-full">
     <div class="flex-1">
       <label for="start_date" class="block text-sm font-medium text-gray-700">Start date</label>
       <input type="date" id="start-date" name="start_date" value={@start_date}
