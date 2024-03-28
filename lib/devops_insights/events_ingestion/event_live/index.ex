@@ -3,7 +3,6 @@ defmodule DevopsInsights.EventsIngestion.EventLive.Index do
   alias DevopsInsights.EventsIngestion.Event
   alias Contex.BarChart
   alias Contex.ContinuousLinearScale
-  alias Contex.PointPlot
   alias Contex.Dataset
   alias Contex.Plot
   alias DevopsInsights.EventsIngestion.EventsFilter
@@ -14,42 +13,30 @@ defmodule DevopsInsights.EventsIngestion.EventLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    events = Gateway.list_events() |> Enum.sort_by(& &1.timestamp, :desc)
-
-    dimentions = %{
-      serviceName: %{displayName: "Service Name", values: MapSet.new()},
-      environment: %{displayName: "Environment", values: MapSet.new()}
-    }
-
-    selectable_dimentions =
-      events
-      |> Enum.reduce(dimentions, fn event, acc ->
-        Map.keys(acc)
-        |> Enum.reduce(acc, fn dim, result ->
-          Map.update!(result, dim, fn %{} = nested ->
-            Map.put(nested, :values, MapSet.put(nested.values, Map.get(event, dim)))
-          end)
-        end)
-      end)
-
-    IO.inspect(selectable_dimentions)
-
-    intervals_to_choose = ["1 day": 1, "1 week": 7, "2 weeks": 14, "1 month": 30]
-
     search_filters = %EventsFilter{
       start_date: Date.utc_today() |> Date.add(-13),
       end_date: Date.utc_today(),
       interval: 1
     }
 
-    deployment_frequency = Gateway.get_deployment_frequency_metric(search_filters)
+    available_dimentions = Gateway.get_available_dimentions()
+
+    dimentions_filter =
+      Map.keys(available_dimentions)
+      |> Enum.reduce(%{}, fn x, acc -> Map.put(acc, x, nil) end)
+
+    deployment_frequency =
+      Gateway.get_deployment_frequency_metric(search_filters)
+
+    intervals_to_choose = ["1 day": 1, "1 week": 7, "2 weeks": 14, "1 month": 30]
 
     {:ok,
-     stream(socket, :events, events)
+     socket
      |> assign(:intervals_to_choose, intervals_to_choose)
-     |> assign(:selectable_dimentions, selectable_dimentions)
+     |> assign(:available_dimentions, available_dimentions)
      |> assign(search_filters |> EventsFilter.to_map())
      |> assign(:search_form, search_filters |> EventsFilter.to_map() |> to_form())
+     |> assign(:dimentions_filter, dimentions_filter)
      |> assign(:chart_svg, render_chart(deployment_frequency))
      |> assign(
        :deployment_frequency,
@@ -68,14 +55,29 @@ defmodule DevopsInsights.EventsIngestion.EventLive.Index do
         "apply_filters",
         %{"start_date" => _, "end_date" => _, "interval" => _} =
           search_filters,
-        socket
+        %{assigns: %{dimentions_filter: dimentions_filter}} = socket
       ) do
+    IO.inspect(search_filters, label: "search_filters")
+
+    dimentions_filter =
+      Map.keys(dimentions_filter)
+      |> Enum.reduce(%{}, fn x, acc ->
+        Map.put(acc, x, Map.get(search_filters, to_string(x)))
+      end)
+
     with {:ok, search_filters} = EventsFilter.from_map(search_filters) do
-      deployment_frequency = Gateway.get_deployment_frequency_metric(search_filters)
+      deployment_frequency =
+        Gateway.get_deployment_frequency_metric(
+          search_filters,
+          dimentions_filter
+          |> Enum.map(fn {key, value} -> {key, value} end)
+          |> Keyword.new()
+        )
 
       {:noreply,
        socket
        |> assign(EventsFilter.to_map(search_filters))
+       |> assign(:dimentions_filter, dimentions_filter)
        |> assign(:deployment_frequency, deployment_frequency)
        |> assign(:chart_svg, render_chart(deployment_frequency))}
     else
@@ -87,25 +89,32 @@ defmodule DevopsInsights.EventsIngestion.EventLive.Index do
   def handle_info(
         %{event: "event_ingested", payload: event},
         %{
-          assigns: %{start_date: start_date, end_date: end_date, interval: interval}
+          assigns: %{
+            start_date: start_date,
+            end_date: end_date,
+            interval: interval,
+            dimentions_filter: dimentions_filter
+          }
         } = socket
       ) do
-    updated_socket = stream_insert(socket, :events, event, at: 0)
-
     search_filters = %EventsFilter{
       start_date: start_date,
       end_date: end_date,
       interval: interval
     }
 
-    deployment_frequency = Gateway.get_deployment_frequency_metric(search_filters)
+    deployment_frequency =
+      Gateway.get_deployment_frequency_metric(search_filters, dimentions_filter)
 
-    updated_socket =
-      updated_socket
+    available_dimentions = Gateway.get_available_dimentions()
+
+    socket =
+      socket
       |> assign(:deployment_frequency, deployment_frequency)
+      |> assign(:available_dimentions, available_dimentions)
       |> assign(:chart_svg, render_chart(deployment_frequency))
 
-    {:noreply, updated_socket}
+    {:noreply, socket}
   end
 
   defp render_chart(deployment_frequency) do

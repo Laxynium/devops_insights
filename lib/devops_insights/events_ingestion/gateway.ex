@@ -14,6 +14,23 @@ defmodule DevopsInsights.EventsIngestion.Gateway do
     Repo.all(Event)
   end
 
+  def get_available_dimentions() do
+    dimentions = %{
+      serviceName: %{displayName: "Service Name", values: MapSet.new()},
+      environment: %{displayName: "Environment", values: MapSet.new()}
+    }
+
+    Repo.all(Event)
+    |> Enum.reduce(dimentions, fn event, acc ->
+      Map.keys(acc)
+      |> Enum.reduce(acc, fn dim, result ->
+        Map.update!(result, dim, fn %{} = nested ->
+          Map.put(nested, :values, MapSet.put(nested.values, Map.get(event, dim)))
+        end)
+      end)
+    end)
+  end
+
   @type event_groups :: %{count: non_neg_integer(), group: non_neg_integer()}
 
   @spec get_deployment_frequency_metric(%EventsFilter{}, keyword()) ::

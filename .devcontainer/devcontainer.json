@@ -6,9 +6,10 @@
         "vscode": {
             "extensions": [
                 "JakeBecker.elixir-ls",
-                "phoenixframework.phoenix"
+                "phoenixframework.phoenix",
+                "humao.rest-client"
             ]
         }
     },
-    "postStartCommand": "mix deps.get && mix tailwind.install && mix assets.setup &&mix ecto.create && mix ecto.migrate"
+    "postStartCommand": "mix deps.get && mix tailwind.install && mix assets.setup && mix ecto.create"
 }
