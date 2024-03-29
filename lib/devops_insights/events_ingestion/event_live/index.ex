@@ -1,8 +1,6 @@
 defmodule DevopsInsights.EventsIngestion.EventLive.Index do
   require Logger
-  alias DevopsInsights.EventsIngestion.Event
   alias Contex.BarChart
-  alias Contex.ContinuousLinearScale
   alias Contex.Dataset
   alias Contex.Plot
   alias DevopsInsights.EventsIngestion.EventsFilter
@@ -57,15 +55,13 @@ defmodule DevopsInsights.EventsIngestion.EventLive.Index do
           search_filters,
         %{assigns: %{dimentions_filter: dimentions_filter}} = socket
       ) do
-    IO.inspect(search_filters, label: "search_filters")
-
     dimentions_filter =
       Map.keys(dimentions_filter)
       |> Enum.reduce(%{}, fn x, acc ->
         Map.put(acc, x, Map.get(search_filters, to_string(x)))
       end)
 
-    with {:ok, search_filters} = EventsFilter.from_map(search_filters) do
+    with {:ok, search_filters} <- EventsFilter.from_map(search_filters) do
       deployment_frequency =
         Gateway.get_deployment_frequency_metric(
           search_filters,
@@ -87,7 +83,7 @@ defmodule DevopsInsights.EventsIngestion.EventLive.Index do
 
   @impl true
   def handle_info(
-        %{event: "event_ingested", payload: event},
+        %{event: "event_ingested", payload: _},
         %{
           assigns: %{
             start_date: start_date,
@@ -120,8 +116,8 @@ defmodule DevopsInsights.EventsIngestion.EventLive.Index do
   defp render_chart(deployment_frequency) do
     data =
       deployment_frequency
-      |> Enum.map(fn %{count: count, group: interval, start: start_date, end: end_date} ->
-        {"[#{start_date};#{end_date}]", count}
+      |> Enum.map(fn %{count: count, group: _, start: start_date, end: end_date} ->
+        {"[#{start_date}; #{end_date}]", count}
       end)
 
     ds = Dataset.new(data)
