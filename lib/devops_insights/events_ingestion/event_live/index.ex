@@ -33,7 +33,6 @@ defmodule DevopsInsights.EventsIngestion.EventLive.Index do
      |> assign(:intervals_to_choose, intervals_to_choose)
      |> assign(:available_dimentions, available_dimentions)
      |> assign(search_filters |> EventsFilter.to_map())
-     |> assign(:search_form, search_filters |> EventsFilter.to_map() |> to_form())
      |> assign(:dimentions_filter, dimentions_filter)
      |> assign(:chart_svg, render_chart(deployment_frequency))
      |> assign(
@@ -58,7 +57,7 @@ defmodule DevopsInsights.EventsIngestion.EventLive.Index do
     dimentions_filter =
       Map.keys(dimentions_filter)
       |> Enum.reduce(%{}, fn x, acc ->
-        Map.put(acc, x, Map.get(search_filters, to_string(x)))
+        Map.put(acc, x, to_nil(Map.get(search_filters, to_string(x))))
       end)
 
     with {:ok, search_filters} <- EventsFilter.from_map(search_filters) do
@@ -125,5 +124,13 @@ defmodule DevopsInsights.EventsIngestion.EventLive.Index do
     Plot.new(ds, BarChart, 600, 400, custom_value_formatter: &"#{trunc(&1)}")
     |> Plot.axis_labels("Interval", "Count")
     |> Plot.to_svg()
+  end
+
+  defp to_nil("") do
+    nil
+  end
+
+  defp to_nil(x) do
+    x
   end
 end

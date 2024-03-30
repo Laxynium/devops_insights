@@ -19,8 +19,8 @@ Accept: application/json
 {
     "event": {
         "type": "deployment",
-        "environment": "dev",
-        "serviceName": "app-4",    
+        "environment": "prod",
+        "serviceName": "app-5",    
         "timestamp": "{{$datetime iso8601}}"
     }
 }

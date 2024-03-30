@@ -16,8 +16,8 @@ defmodule DevopsInsights.EventsIngestion.Gateway do
 
   def get_available_dimentions() do
     dimentions = %{
-      serviceName: %{displayName: "Service Name", values: MapSet.new()},
-      environment: %{displayName: "Environment", values: MapSet.new()}
+      serviceName: %{displayName: "Service Name", values: MapSet.new([nil])},
+      environment: %{displayName: "Environment", values: MapSet.new([nil])}
     }
 
     Repo.all(Event)

@@ -41,7 +41,7 @@ defmodule DevopsInsights.EventsIngestion.Event do
       props,
       true,
       fn {key, value}, acc ->
-        acc && (!Map.has_key?(event, key) || Map.get(event, key) === value)
+        acc && (!Map.has_key?(event, key) || value === nil || Map.get(event, key) === value)
       end
     )
   end
