@@ -60,23 +60,25 @@ defmodule DevopsInsights.EventsIngestion.EventLive.Index do
         Map.put(acc, x, to_nil(Map.get(search_filters, to_string(x))))
       end)
 
-    with {:ok, search_filters} <- EventsFilter.from_map(search_filters) do
-      deployment_frequency =
-        Gateway.get_deployment_frequency_metric(
-          search_filters,
-          dimentions_filter
-          |> Enum.map(fn {key, value} -> {key, value} end)
-          |> Keyword.new()
-        )
+    case EventsFilter.from_map(search_filters) do
+      {:ok, search_filters} ->
+        deployment_frequency =
+          Gateway.get_deployment_frequency_metric(
+            search_filters,
+            dimentions_filter
+            |> Enum.map(fn {key, value} -> {key, value} end)
+            |> Keyword.new()
+          )
 
-      {:noreply,
-       socket
-       |> assign(EventsFilter.to_map(search_filters))
-       |> assign(:dimentions_filter, dimentions_filter)
-       |> assign(:deployment_frequency, deployment_frequency)
-       |> assign(:chart_svg, render_chart(deployment_frequency))}
-    else
-      _ -> {:noreply, socket}
+        {:noreply,
+         socket
+         |> assign(EventsFilter.to_map(search_filters))
+         |> assign(:dimentions_filter, dimentions_filter)
+         |> assign(:deployment_frequency, deployment_frequency)
+         |> assign(:chart_svg, render_chart(deployment_frequency))}
+
+      _ ->
+        {:noreply, socket}
     end
   end
 

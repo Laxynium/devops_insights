@@ -1,4 +1,6 @@
 defmodule DevopsInsights.EventsIngestion.EventsFilter do
+  @moduledoc "Event filter struct"
+
   @type t() :: %__MODULE__{
           start_date: Date.t(),
           end_date: Date.t(),

@@ -24,16 +24,18 @@ defmodule DevopsInsights.EventsIngestion.Gateway do
     |> Enum.reduce(dimentions, fn event, acc ->
       Map.keys(acc)
       |> Enum.reduce(acc, fn dim, result ->
-        Map.update!(result, dim, fn %{} = nested ->
-          Map.put(nested, :values, MapSet.put(nested.values, Map.get(event, dim)))
-        end)
+        Map.update!(result, dim, &set_dimention_values(&1, event, dim))
       end)
     end)
   end
 
+  defp set_dimention_values(%{values: values} = dimention, event, dim) do
+    Map.put(dimention, :values, MapSet.put(values, Map.get(event, dim)))
+  end
+
   @type event_groups :: %{count: non_neg_integer(), group: non_neg_integer()}
 
-  @spec get_deployment_frequency_metric(%EventsFilter{}, keyword()) ::
+  @spec get_deployment_frequency_metric(EventsFilter.t(), keyword()) ::
           [event_groups()]
   def get_deployment_frequency_metric(%EventsFilter{} = events_filter, dimensions \\ []) do
     get_deployment_frequency_metric(
@@ -60,8 +62,9 @@ defmodule DevopsInsights.EventsIngestion.Gateway do
       end)
 
     Repo.all(Event)
-    |> Enum.filter(&Event.dimentions_matching?(&1, dimensions))
-    |> Enum.filter(&Event.in_range?(&1, start, end_))
+    |> Enum.filter(
+      &(Event.dimentions_matching?(&1, dimensions) and Event.in_range?(&1, start, end_))
+    )
     |> Enum.group_by(&Event.calculate_group(&1, start, interval_in_days))
     |> Enum.map(fn {k, v} -> %{group: k, count: Enum.count(v)} end)
     |> Enum.reduce(intervals, fn g, acc ->
