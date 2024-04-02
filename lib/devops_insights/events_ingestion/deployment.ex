@@ -5,7 +5,7 @@ defmodule DevopsInsights.EventsIngestion.Deployment do
   use TypedEctoSchema
   import Ecto.Changeset
 
-  typed_schema "events" do
+  typed_schema "deployments" do
     field :timestamp, :utc_datetime
     field :serviceName, :string
     field :environment, :string

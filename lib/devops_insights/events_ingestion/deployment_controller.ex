@@ -15,7 +15,7 @@ defmodule DevopsInsights.EventsIngestion.DeploymentController do
     with {:ok, %Deployment{} = deployment} <- DeploymentsGateway.create_deployment(deployment_params) do
       conn
       |> put_status(:created)
-      |> put_resp_header("location", ~p"/api/events/#{deployment}")
+      |> put_resp_header("location", ~p"/api/deployments/#{deployment}")
       |> render(:show, deployment: deployment)
     end
   end

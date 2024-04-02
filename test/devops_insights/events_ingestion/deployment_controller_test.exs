@@ -13,17 +13,17 @@ defmodule DevopsInsights.EventsIngestion.DeploymentControllerTest do
 
   describe "index" do
     test "lists all deployments", %{conn: conn} do
-      conn = get(conn, ~p"/api/events")
+      conn = get(conn, ~p"/api/deployments")
       assert json_response(conn, 200)["data"] == []
     end
   end
 
   describe "create deployment" do
     test "renders deployment when data is valid", %{conn: conn} do
-      conn = post(conn, ~p"/api/events", event: @create_attrs)
+      conn = post(conn, ~p"/api/deployments", event: @create_attrs)
       assert %{"id" => id} = json_response(conn, 201)["data"]
 
-      conn = get(conn, ~p"/api/events/#{id}")
+      conn = get(conn, ~p"/api/deployments/#{id}")
 
       assert %{
                "id" => ^id,
