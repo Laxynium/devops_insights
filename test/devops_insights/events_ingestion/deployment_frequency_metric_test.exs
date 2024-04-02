@@ -1,6 +1,6 @@
 defmodule DevopsInsights.DeploymentFrequencyMetricTest do
   alias DevopsInsights.EventsIngestion.EventsFilter
-  alias DevopsInsights.EventsIngestion.DeploymentsGateway
+  alias DevopsInsights.EventsIngestion.Deployments.DeploymentsGateway
   use DevopsInsights.DataCase
 
   test "date range narrowd to single day" do

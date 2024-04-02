@@ -7,7 +7,7 @@ defmodule DevopsInsights.EventsIngestion.EventLive.Index do
   alias DevopsInsightsWeb.Endpoint
   use DevopsInsightsWeb, :live_view
 
-  alias DevopsInsights.EventsIngestion.DeploymentsGateway
+  alias DevopsInsights.EventsIngestion.Deployments.DeploymentsGateway
 
   @impl true
   def mount(_params, _session, socket) do

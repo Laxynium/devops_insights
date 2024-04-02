@@ -1,8 +1,8 @@
-defmodule DevopsInsights.EventsIngestion.DeploymentController do
+defmodule DevopsInsights.EventsIngestion.Deployments.DeploymentController do
   use DevopsInsightsWeb, :controller
 
-  alias DevopsInsights.EventsIngestion.DeploymentsGateway
-  alias DevopsInsights.EventsIngestion.Deployment
+  alias DevopsInsights.EventsIngestion.Deployments.DeploymentsGateway
+  alias DevopsInsights.EventsIngestion.Deployments.Deployment
 
   action_fallback DevopsInsightsWeb.FallbackController
 

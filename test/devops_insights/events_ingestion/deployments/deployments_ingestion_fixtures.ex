@@ -15,7 +15,7 @@ defmodule DevopsInsights.EventsIngestionFixtures do
         serviceName: "some serviceName",
         timestamp: ~U[2024-03-06 22:39:00Z]
       })
-      |> DevopsInsights.EventsIngestion.DeploymentsGateway.create_deployment()
+      |> DevopsInsights.EventsIngestion.Deployments.DeploymentsGateway.create_deployment()
 
     deployment
   end

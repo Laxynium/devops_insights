@@ -1,5 +1,5 @@
-defmodule DevopsInsights.EventsIngestion.DeploymentJSON do
-  alias DevopsInsights.EventsIngestion.Deployment
+defmodule DevopsInsights.EventsIngestion.Deployments.DeploymentJSON do
+  alias DevopsInsights.EventsIngestion.Deployments.Deployment
 
   @doc """
   Renders a list of deployments.

@@ -1,4 +1,4 @@
-defmodule DevopsInsights.EventsIngestion.DeploymentControllerTest do
+defmodule DevopsInsights.EventsIngestion.Deployments.DeploymentControllerTest do
   use DevopsInsightsWeb.ConnCase
 
   @create_attrs %{

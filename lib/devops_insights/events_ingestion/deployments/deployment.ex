@@ -1,7 +1,7 @@
-defmodule DevopsInsights.EventsIngestion.Deployment do
+defmodule DevopsInsights.EventsIngestion.Deployments.Deployment do
   @moduledoc false
 
-  alias DevopsInsights.EventsIngestion.Deployment
+  alias DevopsInsights.EventsIngestion.Deployments.Deployment
   use TypedEctoSchema
   import Ecto.Changeset
 

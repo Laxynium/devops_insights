@@ -1,4 +1,4 @@
-defmodule DevopsInsights.EventsIngestion.DeploymentsGateway do
+defmodule DevopsInsights.EventsIngestion.Deployments.DeploymentsGateway do
   @moduledoc """
   The EventsIngestion context.
   """
@@ -8,7 +8,7 @@ defmodule DevopsInsights.EventsIngestion.DeploymentsGateway do
   alias DevopsInsightsWeb.Endpoint
   alias DevopsInsights.Repo
 
-  alias DevopsInsights.EventsIngestion.Deployment
+  alias DevopsInsights.EventsIngestion.Deployments.Deployment
 
   def list_deployments do
     Repo.all(Deployment)

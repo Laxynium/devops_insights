@@ -1,11 +1,11 @@
-defmodule DevopsInsights.EventsIngestion.DeploymentIngestionTest do
-  alias DevopsInsights.EventsIngestion.Deployment
+defmodule DevopsInsights.EventsIngestion.Deployments.DeploymentIngestionTest do
+  alias DevopsInsights.EventsIngestion.Deployments.Deployment
   use DevopsInsights.DataCase
 
-  alias DevopsInsights.EventsIngestion.DeploymentsGateway
+  alias DevopsInsights.EventsIngestion.Deployments.DeploymentsGateway
 
   describe "deployments" do
-    alias DevopsInsights.EventsIngestion.Deployment
+    alias DevopsInsights.EventsIngestion.Deployments.Deployment
 
     import DevopsInsights.EventsIngestionFixtures
 
