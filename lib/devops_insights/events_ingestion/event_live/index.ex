@@ -7,7 +7,7 @@ defmodule DevopsInsights.EventsIngestion.EventLive.Index do
   alias DevopsInsightsWeb.Endpoint
   use DevopsInsightsWeb, :live_view
 
-  alias DevopsInsights.EventsIngestion.Gateway
+  alias DevopsInsights.EventsIngestion.DeploymentsGateway
 
   @impl true
   def mount(_params, _session, socket) do
@@ -17,14 +17,14 @@ defmodule DevopsInsights.EventsIngestion.EventLive.Index do
       interval: 1
     }
 
-    available_dimentions = Gateway.get_available_dimentions()
+    available_dimentions = DeploymentsGateway.get_available_dimentions()
 
     dimentions_filter =
       Map.keys(available_dimentions)
       |> Enum.reduce(%{}, fn x, acc -> Map.put(acc, x, nil) end)
 
     deployment_frequency =
-      Gateway.get_deployment_frequency_metric(search_filters)
+      DeploymentsGateway.get_deployment_frequency_metric(search_filters)
 
     intervals_to_choose = ["1 day": 1, "1 week": 7, "2 weeks": 14, "1 month": 30]
 
@@ -63,7 +63,7 @@ defmodule DevopsInsights.EventsIngestion.EventLive.Index do
     case EventsFilter.from_map(search_filters) do
       {:ok, search_filters} ->
         deployment_frequency =
-          Gateway.get_deployment_frequency_metric(
+          DeploymentsGateway.get_deployment_frequency_metric(
             search_filters,
             dimentions_filter
             |> Enum.map(fn {key, value} -> {key, value} end)
@@ -101,9 +101,9 @@ defmodule DevopsInsights.EventsIngestion.EventLive.Index do
     }
 
     deployment_frequency =
-      Gateway.get_deployment_frequency_metric(search_filters, dimentions_filter)
+      DeploymentsGateway.get_deployment_frequency_metric(search_filters, dimentions_filter)
 
-    available_dimentions = Gateway.get_available_dimentions()
+    available_dimentions = DeploymentsGateway.get_available_dimentions()
 
     socket =
       socket

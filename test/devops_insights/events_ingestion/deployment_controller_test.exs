@@ -1,9 +1,8 @@
-defmodule DevopsInsights.EventsIngestion.EventControllerTest do
+defmodule DevopsInsights.EventsIngestion.DeploymentControllerTest do
   use DevopsInsightsWeb.ConnCase
 
   @create_attrs %{
     timestamp: ~U[2024-03-06 22:39:00Z],
-    type: :deployment,
     serviceName: "some serviceName",
     environment: "some environment"
   }
@@ -13,14 +12,14 @@ defmodule DevopsInsights.EventsIngestion.EventControllerTest do
   end
 
   describe "index" do
-    test "lists all events", %{conn: conn} do
+    test "lists all deployments", %{conn: conn} do
       conn = get(conn, ~p"/api/events")
       assert json_response(conn, 200)["data"] == []
     end
   end
 
-  describe "create event" do
-    test "renders event when data is valid", %{conn: conn} do
+  describe "create deployment" do
+    test "renders deployment when data is valid", %{conn: conn} do
       conn = post(conn, ~p"/api/events", event: @create_attrs)
       assert %{"id" => id} = json_response(conn, 201)["data"]
 

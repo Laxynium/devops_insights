@@ -29,7 +29,7 @@ defmodule DevopsInsightsWeb.Router do
   scope "/api", DevopsInsights do
     pipe_through :api
 
-    resources "/events", EventsIngestion.EventController, except: [:new, :edit]
+    resources "/events", EventsIngestion.DeploymentController, except: [:new, :edit]
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

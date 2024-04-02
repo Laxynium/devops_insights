@@ -1,6 +1,6 @@
 defmodule DevopsInsights.DeploymentFrequencyMetricTest do
   alias DevopsInsights.EventsIngestion.EventsFilter
-  alias DevopsInsights.EventsIngestion.Gateway
+  alias DevopsInsights.EventsIngestion.DeploymentsGateway
   use DevopsInsights.DataCase
 
   test "date range narrowd to single day" do
@@ -11,10 +11,10 @@ defmodule DevopsInsights.DeploymentFrequencyMetricTest do
       an_event(timestamp: ~U[2024-01-15 23:59:59Z]),
       an_event(timestamp: ~U[2024-01-16 00:00:00Z])
     ]
-    |> Enum.each(&Gateway.create_event(&1))
+    |> Enum.each(&DeploymentsGateway.create_deployment(&1))
 
     assert [%{count: 3, group: 0}] =
-             Gateway.get_deployment_frequency_metric(%EventsFilter{
+             DeploymentsGateway.get_deployment_frequency_metric(%EventsFilter{
                start_date: ~D[2024-01-15],
                end_date: ~D[2024-01-15],
                interval: 1
@@ -29,10 +29,10 @@ defmodule DevopsInsights.DeploymentFrequencyMetricTest do
       an_event(timestamp: ~U[2024-01-15 23:59:59Z]),
       an_event(timestamp: ~U[2024-01-16 00:00:00Z])
     ]
-    |> Enum.each(&Gateway.create_event(&1))
+    |> Enum.each(&DeploymentsGateway.create_deployment(&1))
 
     assert [%{count: 1, group: 0}, %{count: 3, group: 1}, %{count: 1, group: 2}] =
-             Gateway.get_deployment_frequency_metric(%EventsFilter{
+             DeploymentsGateway.get_deployment_frequency_metric(%EventsFilter{
                start_date: ~D[2024-01-14],
                end_date: ~D[2024-01-16],
                interval: 1
@@ -50,10 +50,10 @@ defmodule DevopsInsights.DeploymentFrequencyMetricTest do
       an_event(timestamp: ~U[2024-01-19 23:59:59Z]),
       an_event(timestamp: ~U[2024-01-20 00:00:00Z])
     ]
-    |> Enum.each(&Gateway.create_event(&1))
+    |> Enum.each(&DeploymentsGateway.create_deployment(&1))
 
     assert [%{count: 5, group: 0}, %{count: 2, group: 1}, %{count: 1, group: 2}] =
-             Gateway.get_deployment_frequency_metric(%EventsFilter{
+             DeploymentsGateway.get_deployment_frequency_metric(%EventsFilter{
                start_date: ~D[2024-01-14],
                end_date: ~D[2024-01-20],
                interval: 3
@@ -68,10 +68,10 @@ defmodule DevopsInsights.DeploymentFrequencyMetricTest do
       an_event(timestamp: ~U[2024-01-16 12:00:00Z]),
       an_event(timestamp: ~U[2024-01-17 12:00:00Z])
     ]
-    |> Enum.each(&Gateway.create_event(&1))
+    |> Enum.each(&DeploymentsGateway.create_deployment(&1))
 
     assert [%{count: 3, group: 0}, %{count: 0, group: 1}, %{count: 2, group: 2}] =
-             Gateway.get_deployment_frequency_metric(%EventsFilter{
+             DeploymentsGateway.get_deployment_frequency_metric(%EventsFilter{
                start_date: ~D[2024-01-10],
                end_date: ~D[2024-01-18],
                interval: 3
@@ -86,29 +86,29 @@ defmodule DevopsInsights.DeploymentFrequencyMetricTest do
       an_event(timestamp: ~U[2024-01-16 12:00:00Z], service_name: "app-2", environment: "prod"),
       an_event(timestamp: ~U[2024-01-17 12:00:00Z], service_name: "app-2", environment: "qa")
     ]
-    |> Enum.each(&Gateway.create_event(&1))
+    |> Enum.each(&DeploymentsGateway.create_deployment(&1))
 
     assert [%{count: 3, group: 0}] =
-             Gateway.get_deployment_frequency_metric(
+             DeploymentsGateway.get_deployment_frequency_metric(
                %EventsFilter{start_date: ~D[2024-01-14], end_date: ~D[2024-01-17], interval: 4},
                serviceName: "app-1"
              )
 
     assert [%{count: 3, group: 0}] =
-             Gateway.get_deployment_frequency_metric(
+             DeploymentsGateway.get_deployment_frequency_metric(
                %EventsFilter{start_date: ~D[2024-01-14], end_date: ~D[2024-01-17], interval: 4},
                environment: "qa"
              )
 
     assert [%{count: 1, group: 0}] =
-             Gateway.get_deployment_frequency_metric(
+             DeploymentsGateway.get_deployment_frequency_metric(
                %EventsFilter{start_date: ~D[2024-01-14], end_date: ~D[2024-01-17], interval: 4},
                serviceName: "app-2",
                environment: "prod"
              )
 
     assert [%{count: 5, group: 0}] =
-             Gateway.get_deployment_frequency_metric(
+             DeploymentsGateway.get_deployment_frequency_metric(
                %EventsFilter{start_date: ~D[2024-01-14], end_date: ~D[2024-01-17], interval: 4},
                not_found_prop: "any"
              )
@@ -123,17 +123,17 @@ defmodule DevopsInsights.DeploymentFrequencyMetricTest do
       an_event(timestamp: ~U[2024-01-20 12:00:00Z], service_name: "app-1", environment: "prod"),
       an_event(timestamp: ~U[2024-01-21 12:00:00Z], service_name: "app-1", environment: "prod")
     ]
-    |> Enum.each(&Gateway.create_event(&1))
+    |> Enum.each(&DeploymentsGateway.create_deployment(&1))
 
     assert [%{start: ~D[2024-01-14], end: ~D[2024-01-14]}] =
-             Gateway.get_deployment_frequency_metric(%EventsFilter{
+             DeploymentsGateway.get_deployment_frequency_metric(%EventsFilter{
                start_date: ~D[2024-01-14],
                end_date: ~D[2024-01-14],
                interval: 1
              })
 
     assert [%{start: ~D[2024-01-14], end: ~D[2024-01-15]}] =
-             Gateway.get_deployment_frequency_metric(%EventsFilter{
+             DeploymentsGateway.get_deployment_frequency_metric(%EventsFilter{
                start_date: ~D[2024-01-14],
                end_date: ~D[2024-01-15],
                interval: 2
@@ -143,7 +143,7 @@ defmodule DevopsInsights.DeploymentFrequencyMetricTest do
              %{start: ~D[2024-01-14], end: ~D[2024-01-15]},
              %{start: ~D[2024-01-16], end: ~D[2024-01-16]}
            ] =
-             Gateway.get_deployment_frequency_metric(%EventsFilter{
+             DeploymentsGateway.get_deployment_frequency_metric(%EventsFilter{
                start_date: ~D[2024-01-14],
                end_date: ~D[2024-01-16],
                interval: 2
@@ -154,7 +154,7 @@ defmodule DevopsInsights.DeploymentFrequencyMetricTest do
              %{start: ~D[2024-01-19], end: ~D[2024-01-23]},
              %{start: ~D[2024-01-24], end: ~D[2024-01-25]}
            ] =
-             Gateway.get_deployment_frequency_metric(%EventsFilter{
+             DeploymentsGateway.get_deployment_frequency_metric(%EventsFilter{
                start_date: ~D[2024-01-14],
                end_date: ~D[2024-01-25],
                interval: 5

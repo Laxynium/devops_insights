@@ -1,4 +1,4 @@
-defmodule DevopsInsights.EventsIngestion.Gateway do
+defmodule DevopsInsights.EventsIngestion.DeploymentsGateway do
   @moduledoc """
   The EventsIngestion context.
   """
@@ -8,10 +8,10 @@ defmodule DevopsInsights.EventsIngestion.Gateway do
   alias DevopsInsightsWeb.Endpoint
   alias DevopsInsights.Repo
 
-  alias DevopsInsights.EventsIngestion.Event
+  alias DevopsInsights.EventsIngestion.Deployment
 
-  def list_events do
-    Repo.all(Event)
+  def list_deployments do
+    Repo.all(Deployment)
   end
 
   def get_available_dimentions() do
@@ -20,23 +20,23 @@ defmodule DevopsInsights.EventsIngestion.Gateway do
       environment: %{displayName: "Environment", values: MapSet.new([nil])}
     }
 
-    Repo.all(Event)
-    |> Enum.reduce(dimentions, fn event, acc ->
+    Repo.all(Deployment)
+    |> Enum.reduce(dimentions, fn deployment, acc ->
       Map.keys(acc)
       |> Enum.reduce(acc, fn dim, result ->
-        Map.update!(result, dim, &set_dimention_values(&1, event, dim))
+        Map.update!(result, dim, &set_dimention_values(&1, deployment, dim))
       end)
     end)
   end
 
-  defp set_dimention_values(%{values: values} = dimention, event, dim) do
-    Map.put(dimention, :values, MapSet.put(values, Map.get(event, dim)))
+  defp set_dimention_values(%{values: values} = dimention, deployment, dim) do
+    Map.put(dimention, :values, MapSet.put(values, Map.get(deployment, dim)))
   end
 
-  @type event_groups :: %{count: non_neg_integer(), group: non_neg_integer()}
+  @type deployment_groups :: %{count: non_neg_integer(), group: non_neg_integer()}
 
   @spec get_deployment_frequency_metric(EventsFilter.t(), keyword()) ::
-          [event_groups()]
+          [deployment_groups()]
   def get_deployment_frequency_metric(%EventsFilter{} = events_filter, dimensions \\ []) do
     get_deployment_frequency_metric(
       events_filter.start_date,
@@ -47,7 +47,7 @@ defmodule DevopsInsights.EventsIngestion.Gateway do
   end
 
   @spec get_deployment_frequency_metric(Date.t(), Date.t(), non_neg_integer(), keyword()) ::
-          [event_groups()]
+          [deployment_groups()]
   defp get_deployment_frequency_metric(start, end_, interval_in_days, dimensions) do
     intervals =
       Stream.iterate(0, &(&1 + 1))
@@ -61,11 +61,11 @@ defmodule DevopsInsights.EventsIngestion.Gateway do
         })
       end)
 
-    Repo.all(Event)
+    Repo.all(Deployment)
     |> Enum.filter(
-      &(Event.dimentions_matching?(&1, dimensions) and Event.in_range?(&1, start, end_))
+      &(Deployment.dimentions_matching?(&1, dimensions) and Deployment.in_range?(&1, start, end_))
     )
-    |> Enum.group_by(&Event.calculate_group(&1, start, interval_in_days))
+    |> Enum.group_by(&Deployment.calculate_group(&1, start, interval_in_days))
     |> Enum.map(fn {k, v} -> %{group: k, count: Enum.count(v)} end)
     |> Enum.reduce(intervals, fn g, acc ->
       Map.update!(acc, g.group, fn existing -> %{existing | count: g.count} end)
@@ -73,18 +73,18 @@ defmodule DevopsInsights.EventsIngestion.Gateway do
     |> Map.values()
   end
 
-  def get_event!(id), do: Repo.get!(Event, id)
+  def get_deployment!(id), do: Repo.get!(Deployment, id)
 
-  def create_event(attrs \\ %{}) do
-    event = %Event{}
+  def create_deployment(attrs \\ %{}) do
+    deployment = %Deployment{}
 
     insert_result =
-      event
-      |> Event.changeset(attrs)
+      deployment
+      |> Deployment.changeset(attrs)
       |> Repo.insert()
 
-    with {:ok, %Event{} = event} <- insert_result do
-      Endpoint.broadcast("events", "event_ingested", event)
+    with {:ok, %Deployment{} = deployment} <- insert_result do
+      Endpoint.broadcast("events", "event_ingested", deployment)
     end
 
     insert_result

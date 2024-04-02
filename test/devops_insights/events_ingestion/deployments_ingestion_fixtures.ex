@@ -7,17 +7,16 @@ defmodule DevopsInsights.EventsIngestionFixtures do
   @doc """
   Generate a event.
   """
-  def event_fixture(attrs \\ %{}) do
-    {:ok, event} =
+  def deployment_fixture(attrs \\ %{}) do
+    {:ok, deployment} =
       attrs
       |> Enum.into(%{
         environment: "some environment",
         serviceName: "some serviceName",
-        timestamp: ~U[2024-03-06 22:39:00Z],
-        type: :deployment
+        timestamp: ~U[2024-03-06 22:39:00Z]
       })
-      |> DevopsInsights.EventsIngestion.Gateway.create_event()
+      |> DevopsInsights.EventsIngestion.DeploymentsGateway.create_deployment()
 
-    event
+    deployment
   end
 end
