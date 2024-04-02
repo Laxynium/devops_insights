@@ -17,8 +17,7 @@ Content-Type: application/json
 Accept: application/json
 
 {
-    "event": {
-        "type": "deployment",
+    "event": {        
         "environment": "prod",
         "serviceName": "app-5",    
         "timestamp": "{{$datetime iso8601}}"
@@ -31,8 +30,7 @@ Content-Type: application/json
 Accept: application/json
 
 {
-    "event": {
-        "type": "deployment",
+    "event": {        
         "environment": "",
         "serviceName": "",    
         "timestamp": "{{$datetime iso8601}}"

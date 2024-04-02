@@ -18,7 +18,6 @@ defmodule DevopsInsights.EventsIngestion.EventJSON do
   defp data(%Event{} = event) do
     %{
       id: event.id,
-      type: event.type,
       timestamp: event.timestamp,
       serviceName: event.serviceName,
       environment: event.environment

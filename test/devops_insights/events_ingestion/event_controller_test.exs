@@ -31,7 +31,6 @@ defmodule DevopsInsights.EventsIngestion.EventControllerTest do
                "environment" => "some environment",
                "serviceName" => "some serviceName",
                "timestamp" => "2024-03-06T22:39:00Z",
-               "type" => "deployment"
              } = json_response(conn, 200)["data"]
     end
   end
