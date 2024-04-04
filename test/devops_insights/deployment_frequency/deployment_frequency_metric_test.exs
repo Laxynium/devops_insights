@@ -1,4 +1,4 @@
-defmodule DevopsInsights.DeploymentFrequencyMetricTest do
+defmodule DevopsInsights.DeploymentFrequency.DeploymentFrequencyMetricTest do
   alias DevopsInsights.EventsIngestion.EventsFilter
   alias DevopsInsights.EventsIngestion.Deployments.DeploymentsGateway
   use DevopsInsights.DataCase
