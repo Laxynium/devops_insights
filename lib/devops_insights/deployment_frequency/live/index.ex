@@ -1,4 +1,4 @@
-defmodule DevopsInsights.EventsIngestion.EventLive.Index do
+defmodule DevopsInsights.DeploymentFrequency.Live.Index do
   require Logger
   alias Contex.BarChart
   alias Contex.Dataset

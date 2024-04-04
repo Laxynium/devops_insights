@@ -23,13 +23,14 @@ defmodule DevopsInsightsWeb.Router do
   scope "/", DevopsInsights do
     pipe_through :browser
 
-    live "/events", EventsIngestion.EventLive.Index, :index
+    live "/deployment-frequency", DeploymentFrequency.Live.Index, :index
   end
 
   scope "/api", DevopsInsights do
     pipe_through :api
 
-    resources "/deployments", EventsIngestion.Deployments.DeploymentController, except: [:new, :edit]
+    resources "/deployments", EventsIngestion.Deployments.DeploymentController,
+      except: [:new, :edit]
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
