@@ -1,4 +1,4 @@
-defmodule DevopsInsights.EventsIngestion.Commit do
+defmodule DevopsInsights.EventsIngestion.Commits.Commit do
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -6,7 +6,7 @@ defmodule DevopsInsights.EventsIngestion.Commit do
     field :timestamp, :utc_datetime
     field :commit_id, :string
     field :parent_id, :string
-    field :properties, :map
+    field :service_name, :string
 
     timestamps(type: :utc_datetime)
   end
@@ -14,7 +14,7 @@ defmodule DevopsInsights.EventsIngestion.Commit do
   @doc false
   def changeset(commit, attrs) do
     commit
-    |> cast(attrs, [:timestamp, :commit_id, :parent_id, :properties])
-    |> validate_required([:timestamp, :commit_id, :parent_id])
+    |> cast(attrs, [:timestamp, :commit_id, :parent_id, :service_name])
+    |> validate_required([:timestamp, :commit_id, :service_name])
   end
 end
