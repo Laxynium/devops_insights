@@ -31,6 +31,8 @@ defmodule DevopsInsightsWeb.Router do
 
     resources "/deployments", EventsIngestion.Deployments.DeploymentController,
       except: [:new, :edit]
+
+    post "/commits/root", EventsIngestion.Commits.CommitController, :create_root_commit
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

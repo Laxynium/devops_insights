@@ -1,0 +1,14 @@
+@baseUrl=http://localhost:4000/api
+
+###
+POST {{baseUrl}}/commits/root HTTP/1.1
+Content-Type: application/json
+Accept: application/json
+
+{
+    "commit": {        
+        "commit_id": "50d858e0985ecc7f60418aaf0cc5ab587f42c2570a884095a9e8ccacd0f6545c",
+        "service_name": "app-9",    
+        "timestamp": "{{$datetime iso8601}}"
+    }
+}
