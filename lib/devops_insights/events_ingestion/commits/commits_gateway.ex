@@ -6,30 +6,30 @@ defmodule DevopsInsights.EventsIngestion.Commits.CommitsGateway do
   import Ecto.Query, only: [from: 2]
 
   def create_root_commit(attr \\ %{}) do
-    commit_changeset = %Commit{} |> Commit.changeset(attr)
+    with %Ecto.Changeset{valid?: true} = commit_changeset <- Commit.changeset(%Commit{}, attr),
+         {:ok} <- root_do_not_exist?(commit_changeset) do
+      handle_commit_insertion(attr)
+    else
+      invalid_changeset -> {:error, invalid_changeset} |> IO.inspect(label: "here")
+    end
+  end
 
-    with %Ecto.Changeset{valid?: true} <- commit_changeset do
-      service_name = Changeset.fetch_field!(commit_changeset, :service_name)
+  defp root_do_not_exist?(commit_changeset) do
+    service_name = Changeset.fetch_field!(commit_changeset, :service_name)
 
-      any_root =
-        Repo.exists?(
-          from c in "commits",
-            where: is_nil(c.parent_id) and c.service_name == ^service_name
+    case Repo.exists?(
+           from c in "commits",
+             where: is_nil(c.parent_id) and c.service_name == ^service_name
+         ) do
+      true ->
+        commit_changeset
+        |> Changeset.add_error(
+          :commit,
+          "there is already a root commit for #{service_name}"
         )
 
-      if(any_root == true) do
-        {:error,
-         commit_changeset
-         |> Changeset.add_error(
-           :commit,
-           "there is already a root commit for this service_name"
-         )}
-        |> IO.inspect()
-      else
-        handle_commit_insertion(attr)
-      end
-    else
-      _ -> {:error, commit_changeset} |> IO.inspect()
+      false ->
+        {:ok}
     end
   end
 

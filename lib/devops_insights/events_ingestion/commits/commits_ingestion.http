@@ -8,7 +8,7 @@ Accept: application/json
 {
     "commit": {        
         "commit_id": "50d858e0985ecc7f60418aaf0cc5ab587f42c2570a884095a9e8ccacd0f6545c",
-        "service_name": "app-9",    
+        "service_name": "app-c",    
         "timestamp": "{{$datetime iso8601}}"
     }
 }

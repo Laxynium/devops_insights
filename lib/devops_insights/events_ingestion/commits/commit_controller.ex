@@ -9,9 +9,7 @@ defmodule DevopsInsights.EventsIngestion.Commits.CommitController do
     with {:ok, %Commit{} = commit} <-
            CommitsGateway.create_root_commit(commit_params) do
       conn
-      |> put_status(:created)
-      |> put_resp_header("location", ~p"/api/commits/#{commit}")
-      |> render(:show, commit: commit)
+      |> json(%{data: %{}})
     end
   end
 
