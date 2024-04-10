@@ -1,4 +1,4 @@
-defmodule DevopsInsights.EventsIngestion.Commits.CommitJson do
+defmodule DevopsInsights.EventsIngestion.Commits.CommitJSON do
   alias DevopsInsights.EventsIngestion.Commits.Commit
 
   @doc """
@@ -18,8 +18,9 @@ defmodule DevopsInsights.EventsIngestion.Commits.CommitJson do
   defp data(%Commit{} = commit) do
     %{
       id: commit.id,
-      timestamp: commit.timestamp,
-      service_name: commit.service_name
+      commit_id: commit.commit_id,
+      service_name: commit.service_name,
+      timestamp: commit.timestamp
     }
   end
 end

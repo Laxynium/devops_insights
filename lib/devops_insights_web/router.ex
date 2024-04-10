@@ -33,6 +33,7 @@ defmodule DevopsInsightsWeb.Router do
       except: [:new, :edit]
 
     post "/commits/root", EventsIngestion.Commits.CommitController, :create_root_commit
+    get "/commits/:id", EventsIngestion.Commits.CommitController, :show
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
