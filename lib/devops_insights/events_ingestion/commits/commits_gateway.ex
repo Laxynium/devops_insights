@@ -1,4 +1,5 @@
 defmodule DevopsInsights.EventsIngestion.Commits.CommitsGateway do
+  @moduledoc false
   alias Ecto.Changeset
   alias DevopsInsightsWeb.Endpoint
   alias DevopsInsights.Repo
@@ -10,7 +11,7 @@ defmodule DevopsInsights.EventsIngestion.Commits.CommitsGateway do
          {:ok} <- root_do_not_exist?(commit_changeset) do
       handle_commit_insertion(attr)
     else
-      invalid_changeset -> {:error, invalid_changeset} |> IO.inspect(label: "here")
+      invalid_changeset -> {:error, invalid_changeset}
     end
   end
 

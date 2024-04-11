@@ -1,4 +1,5 @@
 defmodule DevopsInsights.DeploymentFrequency.Live.Index do
+  @moduledoc false
   require Logger
   alias Contex.BarChart
   alias Contex.Dataset

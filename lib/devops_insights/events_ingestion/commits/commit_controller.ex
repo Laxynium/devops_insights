@@ -16,6 +16,6 @@ defmodule DevopsInsights.EventsIngestion.Commits.CommitController do
   end
 
   def show(conn, %{"id" => id}) do
-    json(conn, %{data: %{}})
+    json(conn, %{data: %{id: id}})
   end
 end

@@ -1,4 +1,5 @@
 defmodule DevopsInsights.EventsIngestion.Commits.Commit do
+  @moduledoc false
   use Ecto.Schema
   import Ecto.Changeset
 
