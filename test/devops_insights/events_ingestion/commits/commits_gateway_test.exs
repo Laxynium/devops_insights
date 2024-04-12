@@ -51,6 +51,20 @@ defmodule DevopsInsights.EventsIngestion.Commits.CommitsGatewayTest do
     end
   end
 
-  test "" do
+  test "root commit cannot have a parent" do
+    assert {:ok, %Commit{} = commit} =
+             CommitsGateway.create_root_commit(%{
+               "commit_id" => "1",
+               "service_name" => "app-1",
+               "timestamp" => "2024-04-04T19:07:18Z",
+               "parent_id" => "2"
+             })
+
+    assert %Commit{
+             commit_id: "1",
+             service_name: "app-1",
+             timestamp: ~U[2024-04-04T19:07:18Z],
+             parent_id: nil
+           } = commit
   end
 end

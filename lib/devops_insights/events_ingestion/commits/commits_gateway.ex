@@ -7,9 +7,10 @@ defmodule DevopsInsights.EventsIngestion.Commits.CommitsGateway do
   import Ecto.Query, only: [from: 2]
 
   def create_root_commit(attr \\ %{}) do
-    with %Ecto.Changeset{valid?: true} = commit_changeset <- Commit.changeset(%Commit{}, attr),
+    with %Ecto.Changeset{valid?: true} = commit_changeset <-
+           Commit.changeset(%Commit{}, attr |> Map.drop(["parent_id"]) |> IO.inspect(label: "input")),
          {:ok} <- root_do_not_exist?(commit_changeset) do
-      handle_commit_insertion(attr)
+      handle_commit_insertion(commit_changeset)
     else
       invalid_changeset -> {:error, invalid_changeset}
     end
@@ -34,14 +35,10 @@ defmodule DevopsInsights.EventsIngestion.Commits.CommitsGateway do
     end
   end
 
-  defp handle_commit_insertion(attr) do
-    commit =
-      %Commit{}
-      |> Commit.changeset(attr)
+  defp handle_commit_insertion(commit) do
 
     insert_result =
       commit
-      |> Commit.changeset(attr)
       |> Repo.insert()
 
     with {:ok, %Commit{} = commit} <- insert_result do
