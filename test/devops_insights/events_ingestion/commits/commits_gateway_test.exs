@@ -67,4 +67,36 @@ defmodule DevopsInsights.EventsIngestion.Commits.CommitsGatewayTest do
              parent_id: nil
            } = commit
   end
+
+  # test "cannot add a commit when parent does not exists" do
+  #   CommitsGateway.create_root_commit(%{
+  #     "commit_id" => "1",
+  #     "service_name" => "app-1",
+  #     "timestamp" => "2024-04-04T19:07:18Z"
+  #   })
+
+  #   assert {:error, _} =
+  #            CommitsGateway.create_commit(%{
+  #              "commit_id" => "3",
+  #              "service_name" => "app-1",
+  #              "timestamp" => "2024-04-04T19:10:18Z",
+  #              "parent_id" => "2"
+  #            })
+  # end
+
+  test "can add a commit" do
+    CommitsGateway.create_root_commit(%{
+      "commit_id" => "1",
+      "service_name" => "app-1",
+      "timestamp" => "2024-04-04T19:07:18Z"
+    })
+
+    assert {:ok, _} =
+             CommitsGateway.create_commit(%{
+               "commit_id" => "2",
+               "service_name" => "app-1",
+               "timestamp" => "2024-04-04T19:10:18Z",
+               "parent_id" => "1"
+             })
+  end
 end
