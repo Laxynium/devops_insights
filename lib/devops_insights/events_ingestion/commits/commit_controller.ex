@@ -15,6 +15,16 @@ defmodule DevopsInsights.EventsIngestion.Commits.CommitController do
     end
   end
 
+  def create_commit(conn, %{"commit" => commit_params}) do
+    with {:ok, %Commit{} = commit} <-
+           CommitsGateway.create_commit(commit_params) do
+      conn
+      |> put_status(:created)
+      |> put_resp_header("location", ~p"/api/commits/#{commit}")
+      |> render(:show, commit: commit)
+    end
+  end
+
   def show(conn, %{"id" => id}) do
     json(conn, %{data: %{id: id}})
   end
