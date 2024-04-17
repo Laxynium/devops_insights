@@ -11,7 +11,9 @@ defmodule DevopsInsights.DeploymentFrequency.DeploymentFrequencyMetricTest do
       an_event(timestamp: ~U[2024-01-15 23:59:59Z]),
       an_event(timestamp: ~U[2024-01-16 00:00:00Z])
     ]
-    |> Enum.each(&DeploymentsGateway.create_deployment(&1))
+    |> Enum.each(fn x ->
+      assert {:ok, _} = DeploymentsGateway.create_deployment(x)
+    end)
 
     assert [%{count: 3, group: 0}] =
              DeploymentsGateway.get_deployment_frequency_metric(%EventsFilter{
@@ -166,7 +168,8 @@ defmodule DevopsInsights.DeploymentFrequency.DeploymentFrequencyMetricTest do
       timestamp: Keyword.get(props, :timestamp) || DateTime.utc_now(),
       type: :deployment,
       serviceName: Keyword.get(props, :service_name) || "devops_insights",
-      environment: Keyword.get(props, :environment) || "prod"
+      environment: Keyword.get(props, :environment) || "prod",
+      commit_id: Keyword.get(props, :commit_id) || "1"
     }
   end
 end

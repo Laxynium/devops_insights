@@ -13,7 +13,8 @@ defmodule DevopsInsights.EventsIngestionFixtures do
       |> Enum.into(%{
         environment: "some environment",
         serviceName: "some serviceName",
-        timestamp: ~U[2024-03-06 22:39:00Z]
+        timestamp: ~U[2024-03-06 22:39:00Z],
+        commit_id: "1"
       })
       |> DevopsInsights.EventsIngestion.Deployments.DeploymentsGateway.create_deployment()
 

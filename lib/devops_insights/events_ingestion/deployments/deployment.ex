@@ -9,6 +9,7 @@ defmodule DevopsInsights.EventsIngestion.Deployments.Deployment do
     field :timestamp, :utc_datetime
     field :serviceName, :string
     field :environment, :string
+    field :commit_id, :string
 
     timestamps(type: :utc_datetime)
   end
@@ -16,8 +17,8 @@ defmodule DevopsInsights.EventsIngestion.Deployments.Deployment do
   @doc false
   def changeset(deployment, attrs) do
     deployment
-    |> cast(attrs, [:timestamp, :serviceName, :environment])
-    |> validate_required([:timestamp, :serviceName, :environment])
+    |> cast(attrs, [:timestamp, :serviceName, :environment, :commit_id])
+    |> validate_required([:timestamp, :serviceName, :environment, :commit_id])
   end
 
   @spec in_range?(Deployment.t(), Date.t(), Date.t()) :: boolean()
@@ -40,7 +41,8 @@ defmodule DevopsInsights.EventsIngestion.Deployments.Deployment do
       props,
       true,
       fn {key, value}, acc ->
-        acc && (!Map.has_key?(deployment, key) || value === nil || Map.get(deployment, key) === value)
+        acc &&
+          (!Map.has_key?(deployment, key) || value === nil || Map.get(deployment, key) === value)
       end
     )
   end

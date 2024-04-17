@@ -4,7 +4,8 @@ defmodule DevopsInsights.EventsIngestion.Deployments.DeploymentControllerTest do
   @create_attrs %{
     timestamp: ~U[2024-03-06 22:39:00Z],
     serviceName: "some serviceName",
-    environment: "some environment"
+    environment: "some environment",
+    commit_id: "2"
   }
 
   setup %{conn: conn} do
@@ -30,6 +31,7 @@ defmodule DevopsInsights.EventsIngestion.Deployments.DeploymentControllerTest do
                "environment" => "some environment",
                "serviceName" => "some serviceName",
                "timestamp" => "2024-03-06T22:39:00Z",
+               "commit_id" => "2"
              } = json_response(conn, 200)["data"]
     end
   end

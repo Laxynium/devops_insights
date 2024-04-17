@@ -20,13 +20,15 @@ defmodule DevopsInsights.EventsIngestion.Deployments.DeploymentIngestionTest do
       valid_attrs = %{
         timestamp: ~U[2024-03-06 22:39:00Z],
         serviceName: "some serviceName",
-        environment: "some environment"
+        environment: "some environment",
+        commit_id: "2"
       }
 
       assert {:ok, %Deployment{} = deployment} = DeploymentsGateway.create_deployment(valid_attrs)
       assert deployment.timestamp == ~U[2024-03-06 22:39:00Z]
       assert deployment.serviceName == "some serviceName"
       assert deployment.environment == "some environment"
+      assert deployment.commit_id == "2"
     end
 
     test "create a deployment fails when some properties are invalid" do

@@ -20,7 +20,8 @@ defmodule DevopsInsights.EventsIngestion.Deployments.DeploymentJSON do
       id: deployment.id,
       timestamp: deployment.timestamp,
       serviceName: deployment.serviceName,
-      environment: deployment.environment
+      environment: deployment.environment,
+      commit_id: deployment.commit_id
     }
   end
 end
