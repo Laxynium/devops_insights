@@ -24,6 +24,7 @@ defmodule DevopsInsightsWeb.Router do
     pipe_through :browser
 
     live "/deployment-frequency", DeploymentFrequency.Live.Index, :index
+    live "/lead-time-for-changes", LeadTimeForChanges.Live.Index, :index
   end
 
   scope "/api", DevopsInsights do
