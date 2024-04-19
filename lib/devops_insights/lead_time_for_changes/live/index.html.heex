@@ -2,4 +2,50 @@
   Lead time for changes
 </.header>
 
-Empty
+<form phx-submit="apply_filters">
+  <div class="flex space-x-4 w-full">
+    <div :for={{dimention, %{displayName: displayName, values: values}} <- @available_dimentions}>
+      <label for={dimention} class="block text-sm font-medium text-gray-700">
+        <%= displayName %>
+      </label>
+      <select id={dimention} name={dimention} value={Map.get(@dimentions_filter, dimention)}
+        class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+        <%= Phoenix.HTML.Form.options_for_select(values, Map.get(@dimentions_filter, dimention)) %>
+      </select>
+    </div>
+  </div>
+  <div class="flex space-x-4 w-full">
+    <div class="flex-1">
+      <label for="start_date" class="block text-sm font-medium text-gray-700">Start date</label>
+      <input type="date" id="start-date" name="start_date" value={@start_date}
+        class="mt-1 p-2 w-full border border-gray-300 rounded" />
+    </div>
+    <div class="flex-1">
+      <label for="end_date" class="block text-sm font-medium text-gray-700">End date</label>
+      <input type="date" id="end_date" name="end_date" value={@end_date}
+        class="mt-1 p-2 w-full border border-gray-300 rounded" />
+    </div>
+    <div class="flex-1">
+      <label for="interval" class="block text-sm font-medium text-gray-700">Interval</label>
+      <select id="interval" name="interval" value={@interval}
+        class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+        <%= Phoenix.HTML.Form.options_for_select(@intervals_to_choose, @interval) %>
+      </select>
+    </div>
+    <div class="flex-1">
+      <div>&nbsp;</div>
+      <button type="submit"
+        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+        <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+          viewBox="0 0 24 24">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M5 11.917 9.724 16.5 19 7.5" />
+        </svg>
+        <span class="sr-only">Icon description</span>
+      </button>
+    </div>
+  </div>
+</form>
+<div>
+  Chart here
+</div>
