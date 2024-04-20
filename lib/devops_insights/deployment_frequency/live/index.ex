@@ -5,13 +5,13 @@ defmodule DevopsInsights.DeploymentFrequency.Live.Index do
   alias Contex.BarChart
   alias Contex.Dataset
   alias Contex.Plot
-  alias DevopsInsights.EventsIngestion.EventsFilter
+  alias DevopsInsights.EventsIngestion.IntervalFilter
   alias DevopsInsightsWeb.Endpoint
   use DevopsInsightsWeb, :live_view
 
   @impl true
   def mount(_params, _session, socket) do
-    search_filters = %EventsFilter{
+    search_filters = %IntervalFilter{
       start_date: Date.utc_today() |> Date.add(-13),
       end_date: Date.utc_today(),
       interval: 1
@@ -32,7 +32,7 @@ defmodule DevopsInsights.DeploymentFrequency.Live.Index do
      socket
      |> assign(:intervals_to_choose, intervals_to_choose)
      |> assign(:available_dimentions, available_dimentions)
-     |> assign(search_filters |> EventsFilter.to_map())
+     |> assign(search_filters |> IntervalFilter.to_map())
      |> assign(:dimentions_filter, dimentions_filter)
      |> assign(:chart_svg, render_chart(deployment_frequency))
      |> assign(
@@ -60,7 +60,7 @@ defmodule DevopsInsights.DeploymentFrequency.Live.Index do
         Map.put(acc, x, to_nil(Map.get(search_filters, to_string(x))))
       end)
 
-    case EventsFilter.from_map(search_filters) do
+    case IntervalFilter.from_map(search_filters) do
       {:ok, search_filters} ->
         deployment_frequency =
           DeploymentFrequencyGateway.get_deployment_frequency_metric(
@@ -72,7 +72,7 @@ defmodule DevopsInsights.DeploymentFrequency.Live.Index do
 
         {:noreply,
          socket
-         |> assign(EventsFilter.to_map(search_filters))
+         |> assign(IntervalFilter.to_map(search_filters))
          |> assign(:dimentions_filter, dimentions_filter)
          |> assign(:deployment_frequency, deployment_frequency)
          |> assign(:chart_svg, render_chart(deployment_frequency))}
@@ -94,7 +94,7 @@ defmodule DevopsInsights.DeploymentFrequency.Live.Index do
           }
         } = socket
       ) do
-    search_filters = %EventsFilter{
+    search_filters = %IntervalFilter{
       start_date: start_date,
       end_date: end_date,
       interval: interval

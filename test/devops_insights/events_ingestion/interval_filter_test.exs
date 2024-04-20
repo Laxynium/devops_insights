@@ -1,18 +1,18 @@
-defmodule DevopsInsights.EventsIngestion.EventsFilterTest do
-  alias DevopsInsights.EventsIngestion.EventsFilter
+defmodule DevopsInsights.EventsIngestion.IntervalFilterTest do
+  alias DevopsInsights.EventsIngestion.IntervalFilter
   use DevopsInsights.DataCase
 
   describe "events filter" do
     test "create filter from map" do
       result =
-        EventsFilter.from_map(%{
+        IntervalFilter.from_map(%{
           "start_date" => "2024-03-01",
           "end_date" => "2024-03-15",
           "interval" => "7"
         })
 
       assert {:ok,
-              %EventsFilter{
+              %IntervalFilter{
                 start_date: Date.new!(2024, 03, 1),
                 end_date: Date.new!(2024, 03, 15),
                 interval: 7
@@ -21,7 +21,7 @@ defmodule DevopsInsights.EventsIngestion.EventsFilterTest do
 
     test "filter to map" do
       {:ok, filter} =
-        EventsFilter.from_map(%{
+        IntervalFilter.from_map(%{
           "start_date" => "2024-03-01",
           "end_date" => "2024-03-15",
           "interval" => "7"
@@ -32,7 +32,7 @@ defmodule DevopsInsights.EventsIngestion.EventsFilterTest do
                end_date: Date.new!(2024, 03, 15),
                interval: 7
              } ==
-               EventsFilter.to_map(filter)
+               IntervalFilter.to_map(filter)
     end
   end
 end

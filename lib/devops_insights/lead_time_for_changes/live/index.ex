@@ -1,10 +1,10 @@
 defmodule DevopsInsights.LeadTimeForChanges.Live.Index do
-  alias DevopsInsights.EventsIngestion.EventsFilter
+  alias DevopsInsights.EventsIngestion.IntervalFilter
   use DevopsInsightsWeb, :live_view
 
   @impl true
   def mount(_params, _session, socket) do
-    search_filters = %EventsFilter{
+    search_filters = %IntervalFilter{
       start_date: Date.utc_today() |> Date.add(-13),
       end_date: Date.utc_today(),
       interval: 1
@@ -25,7 +25,7 @@ defmodule DevopsInsights.LeadTimeForChanges.Live.Index do
      |> assign(:available_dimentions, available_dimentions)
      |> assign(:intervals_to_choose, intervals_to_choose)
      |> assign(:dimentions_filter, dimentions_filter)
-     |> assign(search_filters |> EventsFilter.to_map())}
+     |> assign(search_filters |> IntervalFilter.to_map())}
   end
 
   @impl true

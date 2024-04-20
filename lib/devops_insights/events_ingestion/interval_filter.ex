@@ -1,4 +1,4 @@
-defmodule DevopsInsights.EventsIngestion.EventsFilter do
+defmodule DevopsInsights.EventsIngestion.IntervalFilter do
   @moduledoc "Event filter struct"
 
   @type t() :: %__MODULE__{

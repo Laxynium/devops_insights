@@ -1,5 +1,5 @@
 defmodule DevopsInsights.DeploymentFrequency.DeploymentFrequencyGateway do
-  alias DevopsInsights.EventsIngestion.EventsFilter
+  alias DevopsInsights.EventsIngestion.IntervalFilter
   alias DevopsInsights.Repo
   alias DevopsInsights.EventsIngestion.Deployments.Deployment
 
@@ -24,9 +24,9 @@ defmodule DevopsInsights.DeploymentFrequency.DeploymentFrequencyGateway do
 
   @type deployment_groups :: %{count: non_neg_integer(), group: non_neg_integer()}
 
-  @spec get_deployment_frequency_metric(EventsFilter.t(), keyword()) ::
+  @spec get_deployment_frequency_metric(IntervalFilter.t(), keyword()) ::
           [deployment_groups()]
-  def get_deployment_frequency_metric(%EventsFilter{} = events_filter, dimensions \\ []) do
+  def get_deployment_frequency_metric(%IntervalFilter{} = events_filter, dimensions \\ []) do
     get_deployment_frequency_metric(
       events_filter.start_date,
       events_filter.end_date,
