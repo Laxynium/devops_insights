@@ -26,11 +26,11 @@ defmodule DevopsInsights.DeploymentFrequency.DeploymentFrequencyGateway do
 
   @spec get_deployment_frequency_metric(IntervalFilter.t(), keyword()) ::
           [deployment_groups()]
-  def get_deployment_frequency_metric(%IntervalFilter{} = events_filter, dimensions \\ []) do
+  def get_deployment_frequency_metric(%IntervalFilter{} = interval_filter, dimensions \\ []) do
     get_deployment_frequency_metric(
-      events_filter.start_date,
-      events_filter.end_date,
-      events_filter.interval,
+      interval_filter.start_date,
+      interval_filter.end_date,
+      interval_filter.interval,
       dimensions
     )
   end

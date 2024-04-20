@@ -29,7 +29,7 @@ defmodule DevopsInsights.EventsIngestion.IntervalFilter do
   end
 
   @spec to_map(t()) :: %{start_date: Date.t(), end_date: Date.t(), interval: non_neg_integer()}
-  def to_map(events_filter) do
-    Map.from_struct(events_filter)
+  def to_map(interval_filter) do
+    Map.from_struct(interval_filter)
   end
 end
