@@ -1,0 +1,2 @@
+defmodule DevopsInsights.LeadTimeForChanges.LeadTimeForChangesMetricTest do
+end
