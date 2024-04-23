@@ -9,9 +9,15 @@ defmodule DevopsInsights.LeadTimeForChanges.LeadTimeForChangesGateway do
         %IntervalFilter{start_date: start_date, end_date: end_date, interval: interval},
         dimensions \\ []
       ) do
-    deployments = Repo.all(Deployment)
-    commits = Repo.all(Commit)
+    deployments =
+      Repo.all(Deployment)
+      |> Enum.sort_by(fn %Deployment{timestamp: timestamp} -> timestamp end, :asc)
+      |> Enum.with_index(fn el, i -> {i, el} end)
 
-    {:ok, 15}
+    if not (deployments |> Enum.empty?()) do
+      {:ok, 15}
+    else
+      {:error, "No deployments yet"}
+    end
   end
 end
