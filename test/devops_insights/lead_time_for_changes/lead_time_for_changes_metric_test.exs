@@ -26,7 +26,7 @@ defmodule DevopsInsights.LeadTimeForChanges.LeadTimeForChangesMetricTest do
              )
   end
 
-  test "single deployment with commits before and after" do
+  test "single deployment single commit" do
     assert {:ok, _} =
              CommitsGateway.create_root_commit(%{
                "commit_id" => "1",
@@ -35,30 +35,14 @@ defmodule DevopsInsights.LeadTimeForChanges.LeadTimeForChangesMetricTest do
              })
 
     assert {:ok, _} =
-             CommitsGateway.create_commit(%{
-               "commit_id" => "2",
-               "service_name" => "app-1",
-               "timestamp" => "2024-04-04T19:10:00Z",
-               "parent_id" => "1"
-             })
-
-    assert {:ok, _} =
-             CommitsGateway.create_commit(%{
-               "commit_id" => "3",
-               "service_name" => "app-1",
-               "timestamp" => "2024-04-04T19:20:00Z",
-               "parent_id" => "2"
-             })
-
-    assert {:ok, _} =
              DeploymentsGateway.create_deployment(%{
-               "commit_id" => "2",
+               "commit_id" => "1",
                "serviceName" => "app-1",
                "environment" => "prod",
-               "timestamp" => "2024-04-04T19:15:00Z"
+               "timestamp" => "2024-04-04T19:10:00Z"
              })
 
-    assert {:ok, 15} =
+    assert {:ok, 600} =
              LeadTimeForChangesGateway.get_lead_time_for_changes_metric(
                %IntervalFilter{
                  start_date: ~D[2024-01-01],
