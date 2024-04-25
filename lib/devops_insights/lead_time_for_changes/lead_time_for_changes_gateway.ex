@@ -30,9 +30,34 @@ defmodule DevopsInsights.LeadTimeForChanges.LeadTimeForChangesGateway do
       end)
 
     if not (result |> Enum.empty?()) do
-      {:ok, result |> Enum.at(0)}
+      {:ok, result |> median() |> round()}
     else
       {:error, "No deployments yet"}
+    end
+  end
+
+  @spec median([number]) :: number | nil
+  defp median([]), do: nil
+
+  defp median(list) when is_list(list) do
+    midpoint =
+      (length(list) / 2)
+      |> Float.floor()
+      |> round
+
+    {l1, l2} =
+      Enum.sort(list)
+      |> Enum.split(midpoint)
+
+    case length(l2) > length(l1) do
+      true ->
+        [med | _] = l2
+        med
+
+      false ->
+        [m1 | _] = l2
+        [m2 | _] = Enum.reverse(l1)
+        (m1 + m2) / 2
     end
   end
 end
