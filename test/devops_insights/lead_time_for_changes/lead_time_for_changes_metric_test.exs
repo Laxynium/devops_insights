@@ -99,6 +99,16 @@ defmodule DevopsInsights.LeadTimeForChanges.LeadTimeForChangesMetricTest do
                environment: "prod"
              )
   end
+end
+
+defmodule DevopsInsights.LeadTimeForChanges.FindingDeployCommitsTest do
+  alias DevopsInsights.LeadTimeForChanges.LeadTimeForChangesGateway.DeployCommits
+  alias DevopsInsights.EventsIngestion.Commits.Commit
+  alias DevopsInsights.EventsIngestion.Deployments.Deployment
+  alias DevopsInsights.EventsIngestion.Commits.CommitsGateway
+  alias DevopsInsights.EventsIngestion.Deployments.DeploymentsGateway
+  alias DevopsInsights.EventsIngestion
+  use DevopsInsights.DataCase
 
   test "get all deploy commits - single deploy" do
     assert {:ok, _} =
@@ -124,7 +134,8 @@ defmodule DevopsInsights.LeadTimeForChanges.LeadTimeForChangesMetricTest do
                "timestamp" => "2024-04-04T19:12:00Z"
              })
 
-    assert [%Commit{commit_id: "2"}, %Commit{commit_id: "1"}] = get_deploy_commits("2")
+    assert [{%Deployment{commit_id: "2"}, [%Commit{commit_id: "2"}, %Commit{commit_id: "1"}]}] =
+             get_deploy_commits()
   end
 
   test "get all deploy commits - few deploys" do
@@ -167,50 +178,16 @@ defmodule DevopsInsights.LeadTimeForChanges.LeadTimeForChangesMetricTest do
                "timestamp" => "2024-04-04T19:12:00Z"
              })
 
-    assert [%Commit{commit_id: "3"}, %Commit{commit_id: "2"}] = get_deploy_commits("3")
+    assert [
+             {%Deployment{commit_id: "1"}, [%Commit{commit_id: "1"}]},
+             {%Deployment{commit_id: "3"}, [%Commit{commit_id: "3"}, %Commit{commit_id: "2"}]}
+           ] =
+             get_deploy_commits()
   end
 
-  defp get_deploy_commits(deploy_commit_id) do
-    deploys = Repo.all(Deployment) |> Enum.sort_by(& &1.timestamp)
+  defp get_deploy_commits() do
     commits = Repo.all(Commit)
-
-    deploy_index = Enum.find_index(deploys, &(&1.commit_id == deploy_commit_id))
-
-    base_commit_id =
-      if deploy_index >= 1 do
-        Enum.at(deploys, deploy_index - 1).commit_id
-      else
-        nil
-      end
-
-    commit = Enum.find(commits, &(&1.commit_id == deploy_commit_id))
-
-    deploy_commits =
-      Stream.iterate(1, & &1)
-      |> Stream.scan({:running, {commit, [commit]}}, fn _, acc ->
-        case acc do
-          {:running, {current_commit, current_commits}} ->
-            next_commit = Enum.find(commits, &(&1.commit_id == current_commit.parent_id))
-
-            cond do
-              next_commit.commit_id == base_commit_id ->
-                {:done, {next_commit, current_commits}}
-
-              next_commit.parent_id == nil ->
-                {:done, {next_commit, current_commits ++ [next_commit]}}
-
-              true ->
-                {:running, {next_commit, current_commits ++ [next_commit]}}
-            end
-
-          {:done, result} ->
-            {:done, result}
-        end
-      end)
-      |> Stream.drop_while(fn {status, _} -> status != :done end)
-      |> Enum.take(1)
-      |> Enum.flat_map(fn {_, {_, result}} -> result end)
-
-    deploy_commits
+    deploys = Repo.all(Deployment)
+    DeployCommits.get_deploy_commits(commits, deploys)
   end
 end
