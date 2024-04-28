@@ -1,4 +1,6 @@
 defmodule DevopsInsights.LeadTimeForChanges.Live.Index do
+  @moduledoc false
+
   alias DevopsInsights.EventsIngestion.IntervalFilter
   use DevopsInsightsWeb, :live_view
 

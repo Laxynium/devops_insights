@@ -1,4 +1,6 @@
 defmodule DevopsInsights.DeploymentFrequency.DeploymentFrequencyGateway do
+  @moduledoc false
+
   alias DevopsInsights.EventsIngestion.IntervalFilter
   alias DevopsInsights.Repo
   alias DevopsInsights.EventsIngestion.Deployments.Deployment

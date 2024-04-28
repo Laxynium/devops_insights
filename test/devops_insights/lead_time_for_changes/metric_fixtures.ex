@@ -1,4 +1,6 @@
 defmodule MetricFixtures do
+  @moduledoc false
+
   alias DevopsInsights.EventsIngestion.Commits.CommitsGateway
   alias DevopsInsights.EventsIngestion.Deployments.DeploymentsGateway
   alias DevopsInsights.EventsIngestion.IntervalFilter
@@ -10,7 +12,7 @@ defmodule MetricFixtures do
   end
 
   defp apply_event(%{type: :commit} = commit) do
-    if(commit.parent_id == nil) do
+    if commit.parent_id == nil do
       assert {:ok, _} =
                CommitsGateway.create_root_commit(%{
                  "commit_id" => commit.commit_id,

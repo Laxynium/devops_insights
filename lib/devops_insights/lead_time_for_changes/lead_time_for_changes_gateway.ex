@@ -1,4 +1,6 @@
 defmodule DevopsInsights.LeadTimeForChanges.LeadTimeForChangesGateway do
+  @moduledoc false
+
   alias DevopsInsights.LeadTimeForChanges.LeadTimeForChangesGateway.DeployCommits
   alias DevopsInsights.EventsIngestion.Commits.Commit
   alias DevopsInsights.EventsIngestion.Deployments.Deployment
@@ -6,8 +8,8 @@ defmodule DevopsInsights.LeadTimeForChanges.LeadTimeForChangesGateway do
   alias DevopsInsights.EventsIngestion.IntervalFilter
 
   def get_lead_time_for_changes_metric(
-        %IntervalFilter{start_date: start_date, end_date: end_date, interval: interval},
-        dimensions \\ []
+        %IntervalFilter{start_date: _start_date, end_date: _end_date, interval: _interval},
+        _dimensions \\ []
       ) do
     commits = Repo.all(Commit)
     deployments = Repo.all(Deployment)
@@ -22,7 +24,7 @@ defmodule DevopsInsights.LeadTimeForChanges.LeadTimeForChangesGateway do
           end)
       end)
 
-    if not (result |> Enum.empty?()) do
+    if result |> Enum.any?() do
       {:ok, result |> median() |> round()}
     else
       {:error, "No deployments yet"}
@@ -55,6 +57,8 @@ defmodule DevopsInsights.LeadTimeForChanges.LeadTimeForChangesGateway do
   end
 
   defmodule DeployCommits do
+    @moduledoc false
+
     def get_deploy_commits(commits, deploys) do
       commits = commits |> Enum.reduce(%{}, fn x, acc -> Map.put(acc, x.commit_id, x) end)
 
@@ -65,12 +69,7 @@ defmodule DevopsInsights.LeadTimeForChanges.LeadTimeForChangesGateway do
         Enum.reduce(deploys, [], fn {previous_deploy,
                                      %{commit_id: deploy_commit_id} = current_deploy},
                                     deploys_acc ->
-          stop_fn =
-            if previous_deploy != nil do
-              fn c -> c.commit_id == previous_deploy.commit_id end
-            else
-              fn c -> false end
-            end
+          stop_fn = get_stop_fn(previous_deploy)
 
           current_deploy_commits =
             get_all_previous_commits(commits, deploy_commit_id, stop_fn)
@@ -79,6 +78,14 @@ defmodule DevopsInsights.LeadTimeForChanges.LeadTimeForChangesGateway do
         end)
 
       deploys_commits
+    end
+
+    defp get_stop_fn(previous_deploy) do
+      if previous_deploy != nil do
+        fn c -> c.commit_id == previous_deploy.commit_id end
+      else
+        fn _ -> false end
+      end
     end
 
     def get_all_previous_commits(commits_map, commit_id, stop_condition) do
