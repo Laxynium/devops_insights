@@ -90,46 +90,43 @@ defmodule DevopsInsights.LeadTimeForChanges.LeadTimeForChangesGateway do
 
     def get_all_previous_commits(commits_map, commit_id, stop_condition) do
       get_all_previous_commits_stream(commits_map, commit_id, stop_condition)
-      |> Stream.drop_while(fn {state, _, _} -> state != :done end)
-      |> Enum.take(1)
-      |> Enum.flat_map(fn {_, _, result} -> result end)
+      |> then(fn {_, result} -> result end)
     end
 
     def get_all_previous_commits_stream(commits_map, commit_id, stop_condition) do
       Stream.iterate(1, & &1)
-      |> Stream.scan({:running, nil, []}, fn _, acc ->
-        case acc do
-          {:running, nil, []} ->
-            next_commit = commits_map |> Map.fetch!(commit_id)
-
-            if stop_condition.(next_commit) do
-              {:done, nil, []}
-            else
-              {:running, next_commit, [next_commit]}
-            end
-
-          {:running, commit, result} ->
-            cond do
-              stop_condition.(commit) ->
-                {:done, commit, result}
-
-              commit.parent_id == nil ->
-                {:done, commit, result}
-
-              true ->
-                next_commit = commits_map |> Map.fetch!(commit.parent_id)
-
-                if stop_condition.(next_commit) do
-                  {:done, commit, result}
-                else
-                  {:running, next_commit, result ++ [next_commit]}
-                end
-            end
-
-          {:done, state, result} ->
-            {:done, state, result}
-        end
+      |> Enum.reduce_while({nil, []}, fn _, acc ->
+        process_commit(commits_map, commit_id, stop_condition, acc)
       end)
+    end
+
+    defp process_commit(commits_map, initial_commit_id, stop_condition, {nil, []}) do
+      next_commit = commits_map |> Map.fetch!(initial_commit_id)
+
+      if stop_condition.(next_commit) do
+        {:halt, {nil, []}}
+      else
+        {:cont, {next_commit, [next_commit]}}
+      end
+    end
+
+    defp process_commit(commits_map, _, stop_condition, {commit, result}) do
+      cond do
+        stop_condition.(commit) ->
+          {:halt, {commit, result}}
+
+        commit.parent_id == nil ->
+          {:halt, {commit, result}}
+
+        true ->
+          next_commit = commits_map |> Map.fetch!(commit.parent_id)
+
+          if stop_condition.(next_commit) do
+            {:halt, {commit, result}}
+          else
+            {:cont, {next_commit, result ++ [next_commit]}}
+          end
+      end
     end
   end
 end
