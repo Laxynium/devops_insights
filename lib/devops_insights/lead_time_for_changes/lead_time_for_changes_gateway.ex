@@ -1,4 +1,5 @@
 defmodule DevopsInsights.LeadTimeForChanges.LeadTimeForChangesGateway do
+  alias DevopsInsights.LeadTimeForChanges.LeadTimeForChangesGateway.DeployCommits
   alias DevopsInsights.EventsIngestion.Commits.Commit
   alias DevopsInsights.EventsIngestion.Deployments.Deployment
   alias DevopsInsights.Repo
@@ -8,21 +9,13 @@ defmodule DevopsInsights.LeadTimeForChanges.LeadTimeForChangesGateway do
         %IntervalFilter{start_date: start_date, end_date: end_date, interval: interval},
         dimensions \\ []
       ) do
-    deployments = Repo.all(Deployment)
     commits = Repo.all(Commit)
+    deployments = Repo.all(Deployment)
 
-    deploy_commits =
-      Enum.reduce(deployments, %{}, fn %Deployment{commit_id: deploy_commit_id} = deploy, acc ->
-        matching_commit =
-          Enum.find(commits, fn %Commit{commit_id: commit_id} = c ->
-            commit_id == deploy_commit_id
-          end)
-
-        acc |> Map.put(deploy.commit_id, {deploy, [matching_commit]})
-      end)
+    deploy_commits = DeployCommits.get_deploy_commits(commits, deployments)
 
     result =
-      Enum.reduce(deploy_commits, [], fn {_, {%Deployment{} = deploy, commits}}, acc ->
+      Enum.reduce(deploy_commits, [], fn {%Deployment{} = deploy, commits}, acc ->
         acc ++
           Enum.map(commits, fn %Commit{} = commit ->
             DateTime.diff(deploy.timestamp, commit.timestamp)
