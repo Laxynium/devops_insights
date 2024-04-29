@@ -8,13 +8,17 @@ defmodule DevopsInsights.LeadTimeForChanges.LeadTimeForChangesGateway do
   alias DevopsInsights.EventsIngestion.IntervalFilter
 
   def get_lead_time_for_changes_metric(
-        %IntervalFilter{start_date: _start_date, end_date: _end_date, interval: _interval},
+        %IntervalFilter{start_date: start_date, end_date: end_date, interval: _interval},
         _dimensions \\ []
       ) do
     commits = Repo.all(Commit)
     deployments = Repo.all(Deployment)
 
-    deploy_commits = DeployCommits.get_deploy_commits(commits, deployments)
+    deploy_commits =
+      DeployCommits.get_deploy_commits(commits, deployments, fn %Deployment{timestamp: timestamp} ->
+        Date.compare(DateTime.to_date(timestamp), start_date) in [:gt, :eq] &&
+          Date.compare(DateTime.to_date(timestamp), end_date) in [:lt, :eq]
+      end)
 
     result =
       Enum.reduce(deploy_commits, [], fn {%Deployment{} = deploy, commits}, acc ->
@@ -59,11 +63,14 @@ defmodule DevopsInsights.LeadTimeForChanges.LeadTimeForChangesGateway do
   defmodule DeployCommits do
     @moduledoc false
 
-    def get_deploy_commits(commits, deploys) do
+    def get_deploy_commits(commits, deploys, deploys_filter \\ fn _ -> true end) do
       commits = commits |> Enum.reduce(%{}, fn x, acc -> Map.put(acc, x.commit_id, x) end)
 
       deploys = [nil] ++ (deploys |> Enum.sort_by(& &1.timestamp))
-      deploys = Enum.zip(deploys, Enum.drop(deploys, 1))
+
+      deploys =
+        Enum.zip(deploys, Enum.drop(deploys, 1))
+        |> Enum.filter(fn {_, d} -> deploys_filter.(d) end)
 
       deploys_commits =
         Enum.reduce(deploys, [], fn {previous_deploy,

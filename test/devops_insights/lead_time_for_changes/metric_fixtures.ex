@@ -40,11 +40,11 @@ defmodule MetricFixtures do
              })
   end
 
-  def get_lead_time_for_changes_metric() do
+  def get_lead_time_for_changes_metric(start_date \\ ~D[2020-01-01], end_date \\ ~D[2030-01-01]) do
     LeadTimeForChangesGateway.get_lead_time_for_changes_metric(
       %IntervalFilter{
-        start_date: ~D[2020-01-01],
-        end_date: ~D[2030-01-01],
+        start_date: start_date,
+        end_date: end_date,
         interval: 365 * 10
       },
       service_name: "app-1",
