@@ -66,10 +66,10 @@ defmodule DevopsInsights.LeadTimeForChanges.LeadTimeForChangesGateway do
     def get_deploy_commits(commits, deploys, deploys_filter \\ fn _ -> true end) do
       commits = commits |> Enum.reduce(%{}, fn x, acc -> Map.put(acc, x.commit_id, x) end)
 
-      deploys = [nil] ++ (deploys |> Enum.sort_by(& &1.timestamp))
+      deploys = deploys |> Enum.sort_by(& &1.timestamp)
 
       deploys =
-        Enum.zip(deploys, Enum.drop(deploys, 1))
+        Enum.zip([nil] ++ deploys, deploys)
         |> Enum.filter(fn {_, d} -> deploys_filter.(d) end)
 
       deploys_commits =
