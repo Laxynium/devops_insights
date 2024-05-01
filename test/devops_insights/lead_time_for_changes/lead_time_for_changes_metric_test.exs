@@ -59,7 +59,6 @@ defmodule DevopsInsights.LeadTimeForChanges.LeadTimeForChangesMetricTest do
     assert {:ok, 600} = MetricFixtures.get_lead_time_for_changes_metric()
   end
 
-
   @tag only_me: true
   test "deploys outside a time range are not included" do
     [
@@ -74,7 +73,7 @@ defmodule DevopsInsights.LeadTimeForChanges.LeadTimeForChangesMetricTest do
     |> MetricFixtures.apply_events()
 
     # (2 + 1)/2 * 24 * 60 * 60
-    assert {:ok, 129600} = MetricFixtures.get_lead_time_for_changes_metric(~D[2024-04-06], ~D[2030-04-08])
+    assert {:ok, 129_600} =
+             MetricFixtures.get_lead_time_for_changes_metric(~D[2024-04-06], ~D[2030-04-08])
   end
-
 end
