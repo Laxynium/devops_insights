@@ -14,6 +14,7 @@ defmodule DevopsInsights.LeadTimeForChanges.LeadTimeForChangesGateway do
     commits = Repo.all(Commit)
     deployments = Repo.all(Deployment)
 
+    #TODO: Need to split into intervals
     deploy_commits =
       DeployCommits.get_deploy_commits(commits, deployments, fn %Deployment{timestamp: timestamp} ->
         Date.compare(DateTime.to_date(timestamp), start_date) in [:gt, :eq] &&
