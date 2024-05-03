@@ -1,6 +1,7 @@
 defmodule DevopsInsights.LeadTimeForChanges.Live.Index do
   @moduledoc false
 
+  alias DevopsInsights.LeadTimeForChanges.LeadTimeForChangesGateway
   alias DevopsInsights.EventsIngestion.IntervalFilter
   use DevopsInsightsWeb, :live_view
 
@@ -15,6 +16,9 @@ defmodule DevopsInsights.LeadTimeForChanges.Live.Index do
     available_dimentions = %{
       serviceName: %{displayName: "Service Name", values: MapSet.new([nil, "app-1", "app-2"])}
     }
+
+    lead_time_for_changes =
+      LeadTimeForChangesGateway.get_lead_time_for_changes_metric(search_filters)
 
     dimentions_filter =
       Map.keys(available_dimentions)
