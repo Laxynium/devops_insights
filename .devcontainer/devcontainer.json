@@ -7,7 +7,9 @@
             "extensions": [
                 "JakeBecker.elixir-ls",
                 "phoenixframework.phoenix",
-                "humao.rest-client"
+                "humao.rest-client",
+                "bradlc.vscode-tailwindcss",
+                "austenc.tailwind-docs"
             ]
         }
     },
