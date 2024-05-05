@@ -8,13 +8,23 @@ defmodule DevopsInsights.LeadTimeForChanges.LeadTimeForChangesGateway do
   alias DevopsInsights.EventsIngestion.IntervalFilter
 
   def get_lead_time_for_changes_metric(
-        %IntervalFilter{start_date: start_date, end_date: end_date, interval: _interval},
+        %IntervalFilter{start_date: start_date, end_date: end_date, interval: interval_in_days} =
+          interval,
         _dimensions \\ []
       ) do
     commits = Repo.all(Commit)
     deployments = Repo.all(Deployment)
 
-    #TODO: Need to split into intervals
+    buckets = get_buckets(interval)
+
+    filtered_deployments =
+      deployments
+      |> Enum.filter(fn %Deployment{timestamp: timestamp} ->
+        Date.compare(DateTime.to_date(timestamp), start_date) in [:gt, :eq] and
+          Date.compare(DateTime.to_date(timestamp), end_date) in [:lt, :eq]
+      end)
+
+    # TODO: Need to split into intervals
     deploy_commits =
       DeployCommits.get_deploy_commits(commits, deployments, fn %Deployment{timestamp: timestamp} ->
         Date.compare(DateTime.to_date(timestamp), start_date) in [:gt, :eq] &&
@@ -34,6 +44,16 @@ defmodule DevopsInsights.LeadTimeForChanges.LeadTimeForChangesGateway do
     else
       {:error, "No deployments yet"}
     end
+  end
+
+  defp get_buckets(%IntervalFilter{start_date: start_date, end_date: end_date, interval: interval}) do
+    buckets =
+      Stream.iterate(0, &(&1 + 1))
+      |> Enum.take(((Date.diff(end_date, start_date) / interval) |> trunc()) + 1)
+      |> Enum.map(fn x -> {x, []} end)
+      |> Map.new()
+
+    buckets
   end
 
   @spec median([number]) :: number | nil
