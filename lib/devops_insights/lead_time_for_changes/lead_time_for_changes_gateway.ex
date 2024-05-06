@@ -24,6 +24,8 @@ defmodule DevopsInsights.LeadTimeForChanges.LeadTimeForChangesGateway do
           Date.compare(DateTime.to_date(timestamp), end_date) in [:lt, :eq]
       end)
 
+    # TODO calculate a bucket number based on timestamp and put deploy to matching bucket
+
     # TODO: Need to split into intervals
     deploy_commits =
       DeployCommits.get_deploy_commits(commits, deployments, fn %Deployment{timestamp: timestamp} ->
