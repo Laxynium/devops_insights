@@ -24,6 +24,26 @@ defmodule DevopsInsights.LeadTimeForChanges.LeadTimeForChangesGateway do
           Date.compare(DateTime.to_date(timestamp), end_date) in [:lt, :eq]
       end)
 
+    # result =
+    #   filtered_deployments
+    #   |> Enum.reduce(buckets, fn %Deployment{} = deployment, buckets ->
+    #     bucket_number = calculate_bucket(deployment.timestamp, start_date, interval_in_days)
+    #     IO.inspect(bucket_number, label: "bucket nubmer")
+
+    #     buckets
+    #     |> Map.get_and_update(bucket_number, fn val ->
+    #       if(val == nil) do
+    #         {val, []}
+    #       end
+
+    #       {val, val ++ [deployment]}
+    #     end)
+    #     |> elem(1)
+    #     |> IO.inspect(label: "val")
+
+    #     buckets
+    #   end)
+
     # TODO calculate a bucket number based on timestamp and put deploy to matching bucket
 
     # TODO: Need to split into intervals
@@ -56,6 +76,15 @@ defmodule DevopsInsights.LeadTimeForChanges.LeadTimeForChangesGateway do
       |> Map.new()
 
     buckets
+  end
+
+  def calculate_bucket(datetime, start_date, interval_in_days) do
+    interval_in_seconds = interval_in_days * 24 * 60 * 60
+    datetime_in_seconds = DateTime.to_unix(datetime)
+    start_in_seconds = DateTime.to_unix(DateTime.new!(start_date, ~T[00:00:00Z]))
+
+    diff = datetime_in_seconds - start_in_seconds + 1
+    (diff / interval_in_seconds) |> Float.ceil() |> trunc()
   end
 
   @spec median([number]) :: number | nil

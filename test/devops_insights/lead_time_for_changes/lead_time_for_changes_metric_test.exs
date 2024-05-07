@@ -1,4 +1,6 @@
 defmodule DevopsInsights.LeadTimeForChanges.LeadTimeForChangesMetricTest do
+  alias DevopsInsights.LeadTimeForChanges.LeadTimeForChangesGateway
+  alias DevopsInsights.LeadTimeForChanges
   alias MetricFixtures
   use DevopsInsights.DataCase
 
@@ -59,7 +61,6 @@ defmodule DevopsInsights.LeadTimeForChanges.LeadTimeForChangesMetricTest do
     assert {:ok, 600} = MetricFixtures.get_lead_time_for_changes_metric()
   end
 
-  @tag only_me: true
   test "deploys outside a time range are not included" do
     [
       %{type: :commit, commit_id: "1", parent_id: nil, timestamp: "2024-04-01T12:00:00Z"},
@@ -75,5 +76,13 @@ defmodule DevopsInsights.LeadTimeForChanges.LeadTimeForChangesMetricTest do
     # (2 + 1)/2 * 24 * 60 * 60
     assert {:ok, 129_600} =
              MetricFixtures.get_lead_time_for_changes_metric(~D[2024-04-06], ~D[2030-04-08])
+  end
+
+  @tag only_me: true
+  test "calc bucket" do
+    bucket =
+      LeadTimeForChangesGateway.calculate_bucket(~U[2024-05-10T12:00:00Z], ~D[2024-05-01], 4)
+
+    assert 3 == bucket
   end
 end
