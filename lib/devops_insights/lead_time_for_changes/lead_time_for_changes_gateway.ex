@@ -24,26 +24,6 @@ defmodule DevopsInsights.LeadTimeForChanges.LeadTimeForChangesGateway do
           Date.compare(DateTime.to_date(timestamp), end_date) in [:lt, :eq]
       end)
 
-    # result =
-    #   filtered_deployments
-    #   |> Enum.reduce(buckets, fn %Deployment{} = deployment, buckets ->
-    #     bucket_number = calculate_bucket(deployment.timestamp, start_date, interval_in_days)
-    #     IO.inspect(bucket_number, label: "bucket nubmer")
-
-    #     buckets
-    #     |> Map.get_and_update(bucket_number, fn val ->
-    #       if(val == nil) do
-    #         {val, []}
-    #       end
-
-    #       {val, val ++ [deployment]}
-    #     end)
-    #     |> elem(1)
-    #     |> IO.inspect(label: "val")
-
-    #     buckets
-    #   end)
-
     # TODO calculate a bucket number based on timestamp and put deploy to matching bucket
 
     # TODO: Need to split into intervals
