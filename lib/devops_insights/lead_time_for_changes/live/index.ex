@@ -20,6 +20,7 @@ defmodule DevopsInsights.LeadTimeForChanges.Live.Index do
     lead_time_for_changes =
       LeadTimeForChangesGateway.get_lead_time_for_changes_metric(search_filters)
 
+    #
     dimentions_filter =
       Map.keys(available_dimentions)
       |> Enum.reduce(%{}, fn x, acc -> Map.put(acc, x, nil) end)
